@@ -1,0 +1,37 @@
+package com.muzic.aplay
+
+import android.app.Application
+import com.muzic.aplay.viewmodels.FileManagerViewModel
+import com.muzic.aplay.viewmodels.TitleViewModel
+import com.muzic.aplay.viewmodels.YoutubeViewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import timber.log.Timber
+import timber.log.Timber.DebugTree
+
+class APlayApplication : Application() {
+
+    private val module = module {
+        single { PlayFileManager(get()) }
+        single { PlayDownloadManager(get()) }
+        viewModel { FileManagerViewModel(get()) }
+        viewModel { YoutubeViewModel(get()) }
+        viewModel { TitleViewModel() }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        }
+        startKoin {
+            androidLogger()
+            androidContext(this@APlayApplication)
+            modules(module)
+        }
+    }
+}
+
