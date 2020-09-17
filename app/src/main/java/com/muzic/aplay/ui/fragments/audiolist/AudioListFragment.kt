@@ -24,7 +24,6 @@ class AudioListFragment : BottomNavigationFragmentParent(R.layout.audio_list_fra
         val adapter = AudioListAdapter(layoutInflater) {
             Timber.i(it.id)
         }
-        adapter.submitList(AudioRepository.items)
         items.apply {
             setAdapter(adapter)
             layoutManager = LinearLayoutManager(context)

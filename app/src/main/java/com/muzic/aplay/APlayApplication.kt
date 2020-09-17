@@ -1,9 +1,11 @@
 package com.muzic.aplay
 
 import android.app.Application
+import com.muzic.aplay.ui.fragments.radio.RadioViewModel
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -15,11 +17,13 @@ import timber.log.Timber.DebugTree
 class APlayApplication : Application() {
 
     private val module = module {
+        single { OkHttpClient() }
         single { PlayFileManager(get()) }
         single { PlayDownloadManager(get()) }
         viewModel { FileManagerViewModel(get()) }
         viewModel { YoutubeViewModel(get()) }
         viewModel { TitleViewModel() }
+        viewModel { RadioViewModel(get()) }
     }
 
     override fun onCreate() {

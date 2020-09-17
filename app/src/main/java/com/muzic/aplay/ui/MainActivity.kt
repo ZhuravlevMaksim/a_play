@@ -36,11 +36,12 @@ class MainActivity : AppCompatActivity() {
         val bottomSheetBehavior: BottomSheetBehavior<*> = BottomSheetBehavior.from<View>(bottom_sheet)
 
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
 
 //        bottomSheetBehavior.peekHeight = 540
-        bottomSheetBehavior.isHideable = false
+        bottomSheetBehavior.isHideable = true
         fragmentContainer?.foreground?.alpha = 0
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
