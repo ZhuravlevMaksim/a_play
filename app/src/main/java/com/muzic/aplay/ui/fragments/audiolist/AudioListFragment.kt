@@ -1,30 +1,21 @@
 package com.muzic.aplay.ui.fragments.audiolist
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.muzic.aplay.R
 import com.muzic.aplay.db.AudioRepository
-import com.muzic.aplay.viewmodels.TitleViewModel
+import com.muzic.aplay.ui.fragments.BottomNavigationFragmentParent
 import kotlinx.android.synthetic.main.audio_list_fragment.*
 import timber.log.Timber
 
 
-class AudioListFragment : Fragment() {
+class AudioListFragment : BottomNavigationFragmentParent(R.layout.audio_list_fragment, "A play") {
 
     companion object {
         fun newInstance() = AudioListFragment()
     }
-
-    private val titleViewModel: TitleViewModel by activityViewModels()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.audio_list_fragment, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,13 +36,6 @@ class AudioListFragment : Fragment() {
             )
         }
         adapter.submitList(AudioRepository.items)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        activity?.run{
-            titleViewModel.title.value = "A play"
-        }
     }
 
 }

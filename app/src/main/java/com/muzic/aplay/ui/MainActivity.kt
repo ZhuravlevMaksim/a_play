@@ -11,7 +11,11 @@ import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.muzic.aplay.R
+import com.muzic.aplay.ui.fragments.BottomNavigationFragmentParent
 import com.muzic.aplay.ui.fragments.audiolist.AudioListFragment
+import com.muzic.aplay.ui.fragments.podcast.PodcastFragment
+import com.muzic.aplay.ui.fragments.radio.RadioFragment
+import com.muzic.aplay.ui.fragments.source.SourceFragment
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -60,31 +64,17 @@ class MainActivity : AppCompatActivity() {
             topAppBar?.title = title
         }
 
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragmentContainer, AudioListFragment.newInstance())
-        transaction.addToBackStack(null)
-        transaction.commit()
+        startFragment(AudioListFragment.newInstance())
 
 //        openDirectory(Uri.EMPTY)
 //        viewModel.list(Uri.parse("content://com.android.providers.downloads.documents/tree/downloads/document/downloads/children"))
 
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.player_page -> {
-                    true
-                }
-                R.id.podcast_page -> {
-                    topAppBar?.title = "A podcast"
-                    true
-                }
-                R.id.radio_page -> {
-                    topAppBar?.title = "A radio"
-                    true
-                }
-                R.id.source_page -> {
-                    topAppBar?.title = "A source"
-                    true
-                }
+                R.id.player_page -> startFragment(AudioListFragment.newInstance())
+                R.id.podcast_page -> startFragment(PodcastFragment.newInstance())
+                R.id.radio_page -> startFragment(RadioFragment.newInstance())
+                R.id.source_page -> startFragment(SourceFragment.newInstance())
                 else -> false
             }
         }
@@ -111,6 +101,14 @@ class MainActivity : AppCompatActivity() {
             this.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
         }
         startActivityForResult(Intent.createChooser(intent, "Choose directory"), READ_PERM)
+    }
+
+    private fun startFragment(fragment: BottomNavigationFragmentParent): Boolean {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentContainer, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+        return true
     }
 
 }
