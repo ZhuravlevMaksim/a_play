@@ -19,7 +19,7 @@ import com.muzic.aplay.ui.fragments.source.SourceFragment
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.player.*
+import kotlinx.android.synthetic.main.player_bottom_sheet.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -33,20 +33,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bottomSheetBehavior: BottomSheetBehavior<*> = BottomSheetBehavior.from<View>(bottom_sheet)
+        val bottomSheetBehavior: BottomSheetBehavior<*> = BottomSheetBehavior.from<View>(player_bottom_sheet)
 
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-
-//        bottomSheetBehavior.peekHeight = 540
-        bottomSheetBehavior.isHideable = true
+        bottomSheetBehavior.isHideable = false
         fragmentContainer?.foreground?.alpha = 0
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                Log.i("TAG", fragmentContainer?.toString() ?: "")
-                fragmentContainer?.foreground?.alpha = 120
+
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {

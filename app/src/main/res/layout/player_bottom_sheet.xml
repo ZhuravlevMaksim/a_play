@@ -5,22 +5,25 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/bottom_sheet"
+        android:id="@+id/player_bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="340dp"
+        android:layout_height="match_parent"
+        app:behavior_peekHeight="60dp"
         android:background="@android:color/darker_gray"
         android:orientation="vertical"
-        app:behavior_hideable="true"
-        app:behavior_peekHeight="80dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <TextView
+        <androidx.fragment.app.FragmentContainerView
+            android:name="com.muzic.aplay.ui.fragments.player.PlayerFragment"
+            android:id="@+id/smallPlayer"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@color/colorAccent"
-            android:gravity="center"
-            android:text="bottom_sheet_peek"
-            android:textColor="@android:color/white" />
+            android:layout_height="60dp"
+            android:gravity="center" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
         <TextView
             android:layout_width="match_parent"
