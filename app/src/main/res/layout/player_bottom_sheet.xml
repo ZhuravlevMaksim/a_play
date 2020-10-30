@@ -14,7 +14,7 @@
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <androidx.fragment.app.FragmentContainerView
-            android:name="com.muzic.aplay.ui.fragments.player.PlayerFragment"
+            android:name="com.muzic.common.ui.PlayerFragment"
             android:id="@+id/smallPlayer"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -25,12 +25,20 @@
             android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
 
-        <TextView
+        <androidx.fragment.app.FragmentContainerView
+            android:name="com.muzic.common.ui.FullPlayerFragment"
+            android:id="@+id/fullPLayer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="bottom_sheet_content"
-            android:textColor="@android:color/white" />
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:fitsSystemWindows="true"
+            android:paddingBottom="0dp"
+            android:paddingEnd="0dp"
+            android:paddingStart="0dp"
+            android:paddingTop="0dp"
+            app:fastforward_increment="5000"
+            app:rewind_increment="5000"
+            app:show_timeout="2000" />
 
     </LinearLayout>
 

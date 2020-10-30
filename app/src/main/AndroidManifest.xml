@@ -33,8 +33,8 @@
             android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -46,11 +46,26 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.muzic.common.PlayerActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
-            android:label="player activity">
-        </activity>
+        <!--            Player          -->
+
+        <service
+            android:name="com.muzic.common.PlayerService"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedService">
+
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
+
+
+<!--                <activity-->
+<!--                    android:name="com.muzic.common.PlayerActivity"-->
+<!--                    android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"-->
+<!--                    android:label="player activity">-->
+<!--                </activity>-->
 
     </application>
 

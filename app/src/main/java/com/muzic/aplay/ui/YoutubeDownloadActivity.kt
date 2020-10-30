@@ -20,8 +20,10 @@ class YoutubeDownloadActivity : AppCompatActivity() {
 
         intentHandler(intent)
 
-        downloadButton.setOnClickListener {
-            viewModel.download(urlInput.text.toString())
+        urlInput.text?.let {
+            if (it.isNotEmpty()) {
+                viewModel.download(urlInput.text.toString(), this)
+            }
         }
     }
 

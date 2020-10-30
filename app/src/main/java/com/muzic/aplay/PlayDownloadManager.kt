@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
+import com.chopper.services.AudioStreamInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -31,11 +32,9 @@ class PlayDownloadManager(private val context: Context) {
         withContext(Dispatchers.IO) {
             val response = client.newCall(Request.Builder().url(url).build()).execute()
 
-            val file = if (filename.length > 64) filename.substring(0, 64) else filename
-
             if (response.isSuccessful) {
                 val values = ContentValues().apply {
-                    put(MediaStore.Downloads.DISPLAY_NAME, file)
+                    put(MediaStore.Downloads.DISPLAY_NAME, filename)
                     put(MediaStore.Downloads.MIME_TYPE, mimeType)
                     put(MediaStore.Downloads.IS_PENDING, 1)
                 }
@@ -63,21 +62,18 @@ class PlayDownloadManager(private val context: Context) {
         }
     }
 
-
-    fun downloadWithAndroidManager(url: String, filename: String, mimeType: String) {
-
-        val file = if (filename.length > 60) filename.substring(0, 60) else filename
+    fun downloadWithAndroidManager(stream: AudioStreamInfo) {
 
         val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-        val request = DownloadManager.Request(Uri.parse(url))
-            .setTitle(file) // Title of the Download Notification
-            .setDescription(file) // Description of the Download Notification
-            .setMimeType(mimeType)
+        val request = DownloadManager.Request(Uri.parse(stream.audioStream.url))
+            .setTitle(stream.title) // Title of the Download Notification
+            .setDescription(stream.title) // Description of the Download Notification
+            .setMimeType(stream.audioStream.mimeType)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE) // Visibility of the download Notification
             .setDestinationUri(Uri.fromFile(downloadsDir)) // Uri of the destination file
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, "$file.mp3")
-            .setAllowedOverMetered(true) // Set if download is allowed on Mobile network
-            .setAllowedOverRoaming(true) // Set if download is allowed on roaming network
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, stream.file())
+            .setAllowedOverMetered(false)
+            .setAllowedOverRoaming(false)
         val manager = context.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager
         manager.enqueue(request)
     }
