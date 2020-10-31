@@ -63,7 +63,6 @@ class PlayDownloadManager(private val context: Context) {
     }
 
     fun downloadWithAndroidManager(stream: AudioStreamInfo) {
-
         val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
         val request = DownloadManager.Request(Uri.parse(stream.audioStream.url))
             .setTitle(stream.title) // Title of the Download Notification
