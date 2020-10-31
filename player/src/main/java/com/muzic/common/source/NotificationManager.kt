@@ -37,6 +37,10 @@ class NotificationManager(val playerService: PlayerService, val sessionToken: Me
         }
     }
 
+    fun setPlayer(player: Player) {
+        notificationManager.setPlayer(player)
+    }
+
     private inner class PlayerNotificationListener :
         PlayerNotificationManager.NotificationListener {
         override fun onNotificationPosted(
@@ -80,6 +84,5 @@ class DescriptionAdapter(mediaController: MediaControllerCompat) :
     override fun getCurrentLargeIcon(player: Player, callback: PlayerNotificationManager.BitmapCallback): Bitmap? {
         TODO("Not yet implemented")
     }
-
 
 }
