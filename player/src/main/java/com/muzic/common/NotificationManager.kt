@@ -1,4 +1,4 @@
-package com.muzic.common.source
+package com.muzic.common
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -7,12 +7,11 @@ import android.graphics.Bitmap
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.content.ContextCompat
+import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.muzic.common.PlayerService
-import com.muzic.common.R
 
-class NotificationManager(val playerService: PlayerService, val sessionToken: MediaSessionCompat.Token) {
+class NotificationManager(val playerService: PlayerService, private val sessionToken: MediaSessionCompat.Token) {
 
     private var isForegroundService = false
     private val notificationManager: PlayerNotificationManager
@@ -25,15 +24,16 @@ class NotificationManager(val playerService: PlayerService, val sessionToken: Me
             "0",
             R.string.notification_channel,
             R.string.notification_channel_description,
-            0xb339, // some notification unique id
-            DescriptionAdapter(mediaController),
-            PlayerNotificationListener()
+            0xb339, DescriptionAdapter(mediaController), PlayerNotificationListener()
         ).apply {
 
             setMediaSessionToken(sessionToken)
             setSmallIcon(R.drawable.ic_notification)
+            setUseNavigationActions(true)
+            setUseNavigationActionsInCompactView(false)
 
-            setFastForwardIncrementMs(30)
+
+            setControlDispatcher(DefaultControlDispatcher(30_000, 10_000))
         }
     }
 
@@ -43,11 +43,7 @@ class NotificationManager(val playerService: PlayerService, val sessionToken: Me
 
     private inner class PlayerNotificationListener :
         PlayerNotificationManager.NotificationListener {
-        override fun onNotificationPosted(
-            notificationId: Int,
-            notification: Notification,
-            ongoing: Boolean
-        ) {
+        override fun onNotificationPosted(notificationId: Int, notification: Notification, ongoing: Boolean) {
             if (ongoing && !isForegroundService) {
                 ContextCompat.startForegroundService(
                     playerService,
@@ -70,19 +66,19 @@ class NotificationManager(val playerService: PlayerService, val sessionToken: Me
 class DescriptionAdapter(mediaController: MediaControllerCompat) :
     PlayerNotificationManager.MediaDescriptionAdapter {
     override fun getCurrentContentTitle(player: Player): CharSequence {
-        TODO("Not yet implemented")
+        return "Title"
     }
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun getCurrentContentText(player: Player): CharSequence? {
-        TODO("Not yet implemented")
+        return "Title"
     }
 
     override fun getCurrentLargeIcon(player: Player, callback: PlayerNotificationManager.BitmapCallback): Bitmap? {
-        TODO("Not yet implemented")
+        return null
     }
 
 }

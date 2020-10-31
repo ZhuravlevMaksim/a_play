@@ -59,8 +59,6 @@
             </intent-filter>
         </service>
 
-
-
 <!--                <activity-->
 <!--                    android:name="com.muzic.common.PlayerActivity"-->
 <!--                    android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"-->

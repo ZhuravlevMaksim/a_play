@@ -1,10 +1,8 @@
 package com.muzic.common.source
 
-import android.support.v4.media.MediaMetadataCompat
+abstract class MediaSource {
 
-class MediaSource {
-
-    fun playableList() = emptyList<MediaMetadataCompat>()
+    abstract fun playableList(): List<String>
 
     @State
     var state: Int = STATE_CREATED

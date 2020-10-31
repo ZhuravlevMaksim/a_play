@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -18,6 +19,7 @@ import com.muzic.aplay.ui.fragments.radio.RadioFragment
 import com.muzic.aplay.ui.fragments.source.SourceFragment
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
+import com.muzic.common.PlayerService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.player_bottom_sheet.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -80,6 +82,11 @@ class MainActivity : AppCompatActivity() {
         val badge = bottomNavigation.getOrCreateBadge(R.id.podcast_page)
         badge.isVisible = true
         badge.number = 99
+
+        ContextCompat.startForegroundService(
+            applicationContext,
+            Intent(applicationContext, PlayerService::class.java)
+        )
 
     }
 

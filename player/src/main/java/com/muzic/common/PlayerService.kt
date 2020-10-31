@@ -15,8 +15,11 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.muzic.common.source.MediaSource
-import com.muzic.common.source.NotificationManager
-import com.muzic.common.source.PersistentStorage
+import com.muzic.common.source.YoutubeMediaSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class PlayerService : MediaBrowserServiceCompat() {
 
@@ -25,16 +28,17 @@ class PlayerService : MediaBrowserServiceCompat() {
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
+    private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
     private lateinit var storage: PersistentStorage
 
-    private val tree: List<MediaMetadataCompat> by lazy {
-        mediaSource.playableList()
-    }
+//    private val tree: List<MediaMetadataCompat> by lazy {
+//        mediaSource.playableList()
+//    }
 
-    private val exoPlayer: SimpleExoPlayer by lazy {
-        ExoPlayer(this).create()
+    private val player: ExoPlayerWrapper by lazy {
+        ExoPlayerWrapper(this)
     }
 
     override fun onCreate() {
@@ -45,35 +49,41 @@ class PlayerService : MediaBrowserServiceCompat() {
                 PendingIntent.getActivity(this, 0, sessionIntent, 0)
             }
 
-        mediaSession = MediaSessionCompat(this, "PlayerService")
-            .apply {
-                setSessionActivity(sessionActivityPendingIntent)
-                isActive = true
-            }
+        mediaSession = MediaSessionCompat(this, "PlayerService").apply {
+            setSessionActivity(sessionActivityPendingIntent)
+            isActive = true
+        }
 
         sessionToken = mediaSession.sessionToken
 
         notificationManager = NotificationManager(this, mediaSession.sessionToken)
 
-        mediaSource = MediaSource()
-//        mediaSource = JsonSource(source = remoteJsonSource)
-//        serviceScope.launch {
-//            mediaSource.load()
-//        }
+        mediaSource = YoutubeMediaSource()
 
-//        mediaSessionConnector = MediaSessionConnector(mediaSession)
+        this.serviceScope.launch {
+            (mediaSource as YoutubeMediaSource).load("https://www.youtube.com/watch?v=GKnQGP67Xd0")
+        }
+
+        mediaSessionConnector = MediaSessionConnector(mediaSession)
 //        mediaSessionConnector.setPlaybackPreparer(UampPlaybackPreparer())
 //        mediaSessionConnector.setQueueNavigator(UampQueueNavigator(mediaSession))
 //
-        notificationManager.setPlayer(exoPlayer)
+        notificationManager.setPlayer(player.player)
 //
 //        storage = PersistentStorage.getInstance(applicationContext)
+
+        mediaSource.whenReady { successfullyInitialized ->
+            if (successfullyInitialized) {
+                player.play(mediaSource.playableList())
+            }
+        }
+
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
 //        saveRecentSongToStorage()
         super.onTaskRemoved(rootIntent)
-        exoPlayer.stop(/* reset= */true)
+        player.player.stop(true)
     }
 
     override fun onDestroy() {
@@ -82,9 +92,7 @@ class PlayerService : MediaBrowserServiceCompat() {
             release()
         }
 
-        //todo singleton
-        ExoPlayer(this).destroy()
-
+        player.destroy()
     }
 
     override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
@@ -95,35 +103,32 @@ class PlayerService : MediaBrowserServiceCompat() {
         if (parentId == "/") {
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
-                    val children = tree.map { item ->
-                        MediaBrowserCompat.MediaItem(item.description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE)
-                    }
-                    result.sendResult(children as MutableList<MediaBrowserCompat.MediaItem>?)
-                } else {
-                    mediaSession.sendSessionEvent("NETWORK_FAILURE", null)
-                    result.sendResult(null)
+                    player.play(mediaSource.playableList())
+
+//                    val children = tree.map { item ->
+//                        MediaBrowserCompat.MediaItem(item.description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE)
+//                    }
+//                    result.sendResult(children as MutableList<MediaBrowserCompat.MediaItem>?)
+//                } else {
+//                    mediaSession.sendSessionEvent("NETWORK_FAILURE", null)
+//                    result.sendResult(null)
                 }
             }
-            if (!resultsSent) {
-                result.detach()
-            }
+//            if (!resultsSent) {
+//                result.detach()
+//            }
         }
     }
 
 }
 
-class ExoPlayer(val context: Context) {
+class ExoPlayerWrapper(val context: Context) {
 
     private val listener = PlayerEventListener()
-    private lateinit var player: SimpleExoPlayer
-
-    fun create(): SimpleExoPlayer {
-        player = SimpleExoPlayer.Builder(context).build().apply {
-            setAudioAttributes(AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MUSIC).setUsage(C.USAGE_MEDIA).build(), true)
-            setHandleAudioBecomingNoisy(true)
-            addListener(listener)
-        }
-        return player
+    public val player =  SimpleExoPlayer.Builder(context).build().apply {
+        setAudioAttributes(AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MUSIC).setUsage(C.USAGE_MEDIA).build(), true)
+        setHandleAudioBecomingNoisy(true)
+        addListener(listener)
     }
 
     fun destroy() {

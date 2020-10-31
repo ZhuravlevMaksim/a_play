@@ -9,42 +9,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class YoutubeMediaSource(private val url: String) : Iterable<MediaMetadataCompat> {
+class YoutubeMediaSource : MediaSource() {
 
-    private var catalog: List<MediaMetadataCompat> = emptyList()
+    private var catalog: List<String> = emptyList()
 
-    override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
+    override fun playableList(): List<String> {
+        return catalog
+    }
 
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
 
-    @State
-    var state: Int = STATE_INITIALIZING
-        set(value) {
-            if (value == STATE_INITIALIZED || value == STATE_ERROR) {
-                synchronized(onReadyListeners) {
-                    field = value
-                    onReadyListeners.forEach { listener ->
-                        listener(state == STATE_INITIALIZED)
-                    }
-                }
-            } else {
-                field = value
-            }
-        }
-
-    fun whenReady(performAction: (Boolean) -> Unit): Boolean =
-        when (state) {
-            STATE_CREATED, STATE_INITIALIZING -> {
-                onReadyListeners += performAction
-                false
-            }
-            else -> {
-                performAction(state != STATE_ERROR)
-                true
-            }
-        }
-
-    suspend fun load() {
+    suspend fun load(url: String) {
         updateCatalog(url)?.let { updatedCatalog ->
             catalog = updatedCatalog
             state = STATE_INITIALIZED
@@ -54,29 +29,13 @@ class YoutubeMediaSource(private val url: String) : Iterable<MediaMetadataCompat
         }
     }
 
-    private suspend fun updateCatalog(url: String): List<MediaMetadataCompat>? {
+    private suspend fun updateCatalog(url: String): List<String>? {
         return withContext(Dispatchers.IO) {
-            val stream = try {
-                YoutubeService().getAudioStream(
-                    if (url.contains("youtu.be")) "https://www.youtube.com/watch?v=" + url.replace("https://youtu.be/", "") else url
-                )
+            try {
+                listOf<String>(YoutubeService().getAudioStream(url).audioStream.url)
             } catch (ioException: IOException) {
-                return@withContext null
+                return@withContext emptyList()
             }
-
-            val mediaMetadataCompats = listOf(url.let { url ->
-                MediaMetadataCompat.Builder()
-                    .from(stream)
-                    .apply {
-//                        displayIconUri = song.image
-//                        albumArtUri = song.image
-                    }
-                    .build()
-            })
-//             Add description keys to be used by the ExoPlayer MediaSession extension when
-//             announcing metadata changes.
-            mediaMetadataCompats.forEach { it.description.extras?.putAll(it.bundle) }
-            mediaMetadataCompats
         }
     }
 
