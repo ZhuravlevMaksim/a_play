@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.muzic.aplay.R
 import com.muzic.aplay.db.AudioRepository
+import com.muzic.aplay.ui.inflateMenu
 import kotlinx.android.synthetic.main.audio_list_fragment.*
 import timber.log.Timber
 
@@ -36,6 +37,11 @@ class AudioListFragment : Fragment() {
             )
         }
         adapter.submitList(AudioRepository.items)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        inflateMenu("A Player", R.menu.player_menu)
     }
 
 }

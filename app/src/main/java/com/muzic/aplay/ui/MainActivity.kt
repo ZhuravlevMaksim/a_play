@@ -2,6 +2,7 @@ package com.muzic.aplay.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.muzic.aplay.R
@@ -22,8 +23,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
-            it as NavHostFragment
-            navController = it.navController
+            (it as NavHostFragment).navController.also { controller -> navController = controller }
         }
 
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
@@ -38,4 +38,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+}
+
+fun Fragment.setTopAppBarTitle(title: String) {
+    activity?.topAppBar?.title = title
+}
+
+fun Fragment.inflateMenu(title: String, menu: Int) {
+    activity?.topAppBar?.title = title
+    activity?.topAppBar?.inflateMenu(menu)
+}
+
+fun Fragment.inflateMenu(menu: Int) {
+    activity?.topAppBar?.inflateMenu(menu)
 }

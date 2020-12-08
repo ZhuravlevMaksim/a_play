@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.muzic.aplay">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,10 +23,6 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-
-        <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
@@ -48,16 +43,16 @@
 
         <!--            Player          -->
 
-        <service
-            android:name="com.muzic.common.PlayerService"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedService">
+<!--        <service-->
+<!--            android:name="com.muzic.common.PlayerService"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true"-->
+<!--            tools:ignore="ExportedService">-->
 
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.media.browse.MediaBrowserService" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
 
 <!--                <activity-->
 <!--                    android:name="com.muzic.common.PlayerActivity"-->
