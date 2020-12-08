@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 class PlayerService : MediaBrowserServiceCompat() {
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var mediaSource: MediaSource
+    private  var mediaSource: MediaSource? = null
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
@@ -58,7 +58,7 @@ class PlayerService : MediaBrowserServiceCompat() {
 
         notificationManager = NotificationManager(this, mediaSession.sessionToken)
 
-        mediaSource = YoutubeMediaSource()
+//        mediaSource = YoutubeMediaSource()
 
         this.serviceScope.launch {
             (mediaSource as YoutubeMediaSource).load("https://www.youtube.com/watch?v=GKnQGP67Xd0")
@@ -72,11 +72,11 @@ class PlayerService : MediaBrowserServiceCompat() {
 //
 //        storage = PersistentStorage.getInstance(applicationContext)
 
-        mediaSource.whenReady { successfullyInitialized ->
-            if (successfullyInitialized) {
-                player.play(mediaSource.playableList())
-            }
-        }
+//        mediaSource.whenReady { successfullyInitialized ->
+//            if (successfullyInitialized) {
+//                player.play(mediaSource.playableList())
+//            }
+//        }
 
     }
 
@@ -100,10 +100,10 @@ class PlayerService : MediaBrowserServiceCompat() {
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
-        if (parentId == "/") {
-            val resultsSent = mediaSource.whenReady { successfullyInitialized ->
-                if (successfullyInitialized) {
-                    player.play(mediaSource.playableList())
+//        if (parentId == "/") {
+//            val resultsSent = mediaSource.whenReady { successfullyInitialized ->
+//                if (successfullyInitialized) {
+//                    player.play(mediaSource.playableList())
 
 //                    val children = tree.map { item ->
 //                        MediaBrowserCompat.MediaItem(item.description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE)
@@ -112,12 +112,12 @@ class PlayerService : MediaBrowserServiceCompat() {
 //                } else {
 //                    mediaSession.sendSessionEvent("NETWORK_FAILURE", null)
 //                    result.sendResult(null)
-                }
-            }
+//                }
+//            }
 //            if (!resultsSent) {
 //                result.detach()
 //            }
-        }
+//        }
     }
 
 }

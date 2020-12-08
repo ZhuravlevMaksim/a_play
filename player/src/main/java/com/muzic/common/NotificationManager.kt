@@ -11,6 +11,10 @@ import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 
+
+const val CHANNEL = "aplay.NOW_PLAYING"
+const val NOTIFICATION_ID = 0xb723
+
 class NotificationManager(val playerService: PlayerService, private val sessionToken: MediaSessionCompat.Token) {
 
     private var isForegroundService = false
@@ -21,10 +25,9 @@ class NotificationManager(val playerService: PlayerService, private val sessionT
 
         notificationManager = PlayerNotificationManager.createWithNotificationChannel(
             playerService,
-            "0",
-            R.string.notification_channel,
-            R.string.notification_channel_description,
-            0xb339, DescriptionAdapter(mediaController), PlayerNotificationListener()
+            CHANNEL,
+            R.string.notification_channel, R.string.notification_channel_description,
+            NOTIFICATION_ID, DescriptionAdapter(mediaController), PlayerNotificationListener()
         ).apply {
 
             setMediaSessionToken(sessionToken)
@@ -63,18 +66,18 @@ class NotificationManager(val playerService: PlayerService, private val sessionT
     }
 }
 
-class DescriptionAdapter(mediaController: MediaControllerCompat) :
+class DescriptionAdapter(private val controller: MediaControllerCompat) :
     PlayerNotificationManager.MediaDescriptionAdapter {
     override fun getCurrentContentTitle(player: Player): CharSequence {
-        return "Title"
+        return controller.metadata.description.title.toString()
     }
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? {
-        return null
+        return controller.sessionActivity
     }
 
     override fun getCurrentContentText(player: Player): CharSequence? {
-        return "Title"
+        return controller.metadata.description.subtitle.toString()
     }
 
     override fun getCurrentLargeIcon(player: Player, callback: PlayerNotificationManager.BitmapCallback): Bitmap? {

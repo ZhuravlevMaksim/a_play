@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/audioListFragment">
+    <fragment
+        android:id="@+id/audioListFragment"
+        android:name="com.muzic.aplay.ui.fragments.audiolist.AudioListFragment"
+        android:label="AudioListFragment" />
+    <fragment
+        android:id="@+id/podcastFragment"
+        android:name="com.muzic.aplay.ui.fragments.podcast.PodcastFragment"
+        android:label="PodcastFragment" />
+    <fragment
+        android:id="@+id/radioFragment"
+        android:name="com.muzic.aplay.ui.fragments.radio.RadioFragment"
+        android:label="RadioFragment" />
+    <fragment
+        android:id="@+id/sourceFragment"
+        android:name="com.muzic.aplay.ui.fragments.source.SourceFragment"
+        android:label="SourceFragment" />
+</navigation>
