@@ -1,5 +1,6 @@
 package com.muzic.aplay.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -36,8 +37,24 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        handleIntent(intent)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        intent?.let {
+            intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                bottomNavigation.selectedItemId = R.id.source_page
+                navController.navigate(R.id.sourceFragment, Bundle().apply {
+                    this.putString("url", it)
+                })
+            }
+        }
+    }
 }
 
 fun Fragment.setTopAppBarTitle(title: String) {

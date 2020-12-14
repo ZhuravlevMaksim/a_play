@@ -14,17 +14,13 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.muzic.common.source.MediaSource
-import com.muzic.common.source.YoutubeMediaSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 class PlayerService : MediaBrowserServiceCompat() {
 
     private lateinit var notificationManager: NotificationManager
-    private  var mediaSource: MediaSource? = null
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
@@ -60,9 +56,6 @@ class PlayerService : MediaBrowserServiceCompat() {
 
 //        mediaSource = YoutubeMediaSource()
 
-        this.serviceScope.launch {
-            (mediaSource as YoutubeMediaSource).load("https://www.youtube.com/watch?v=GKnQGP67Xd0")
-        }
 
         mediaSessionConnector = MediaSessionConnector(mediaSession)
 //        mediaSessionConnector.setPlaybackPreparer(UampPlaybackPreparer())

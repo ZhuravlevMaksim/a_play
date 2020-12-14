@@ -21,7 +21,7 @@ class APlayApplication : Application() {
         single { PlayFileManager(get()) }
         single { PlayDownloadManager(get()) }
         viewModel { FileManagerViewModel(get()) }
-        viewModel { YoutubeViewModel(get()) }
+        viewModel { YoutubeViewModel(get(), get()) }
         viewModel { TitleViewModel() }
         viewModel { RadioViewModel(get()) }
     }
