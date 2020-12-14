@@ -11,5 +11,6 @@ data class YoutubeStream(
     var title: String,
     var contentLength: String,
     var mimeType: String,
-    var fileName: String
+    var fileName: String,
+    var update: Long = System.currentTimeMillis()
 )

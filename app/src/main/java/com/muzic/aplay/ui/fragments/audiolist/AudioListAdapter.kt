@@ -8,10 +8,8 @@ import com.muzic.aplay.databinding.AudioRowBinding
 import com.muzic.aplay.db.AudioFile
 
 class AudioListAdapter(private val inflater: LayoutInflater, private val onClick: (AudioFile) -> Unit) : ListAdapter<AudioFile, AudioRowHolder>(DiffCallback) {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = AudioRowHolder(AudioRowBinding.inflate(inflater, parent, false), onClick)
     override fun onBindViewHolder(holder: AudioRowHolder, position: Int) = holder.bind(getItem(position))
-
 }
 
 private object DiffCallback : DiffUtil.ItemCallback<AudioFile>() {
