@@ -1,10 +1,7 @@
 package com.muzic.aplay.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface YoutubeStreamRepository {
@@ -14,5 +11,8 @@ interface YoutubeStreamRepository {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(stream: YoutubeStream)
+
+    @Delete
+    fun delete(stream: YoutubeStream)
 
 }

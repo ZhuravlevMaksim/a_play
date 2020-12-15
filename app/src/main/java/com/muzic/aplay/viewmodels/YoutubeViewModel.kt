@@ -34,6 +34,7 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
 
     private fun insert(stream: AudioStreamInfo) = dao.insert(
         YoutubeStream(
+            uid = stream.uid,
             url = stream.audioStream.url,
             contentLength = stream.audioStream.contentLength,
             fileName = stream.file(),
@@ -42,7 +43,9 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
         )
     )
 
-    // downloadManager.downloadWithAndroidManager(it)
+    public fun download(stream: YoutubeStream) {
+        downloadManager.downloadWithAndroidManager(stream)
+    }
 
     private fun extractUid(url: String): Pair<TYPE, String?> {
         if (url.contains("list")) {
@@ -52,6 +55,14 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
             return Pair(TYPE.VIDEO, url.replace("https://youtu.be/", ""))
         }
         return Pair(TYPE.VIDEO, Regex("watch\\?v=(.+)&|watch\\?v=(.+)\$").find(url)?.destructured?.component1())
+    }
+
+    fun remove(youtubeStream: YoutubeStream?) {
+        youtubeStream?.let {
+            viewModelScope.launch(Dispatchers.IO) {
+                dao.delete(it)
+            }
+        }
     }
 
     enum class TYPE {

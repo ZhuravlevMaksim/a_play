@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class YoutubeStream(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
+    var uid: String,
     var url: String,
     var title: String,
     var contentLength: String,

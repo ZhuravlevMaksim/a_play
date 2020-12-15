@@ -9,7 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
-import com.chopper.services.AudioStreamInfo
+import com.muzic.aplay.db.YoutubeStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -62,15 +62,15 @@ class PlayDownloadManager(private val context: Context) {
         }
     }
 
-    fun downloadWithAndroidManager(stream: AudioStreamInfo) {
+    fun downloadWithAndroidManager(stream: YoutubeStream) {
         val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-        val request = DownloadManager.Request(Uri.parse(stream.audioStream.url))
+        val request = DownloadManager.Request(Uri.parse(stream.url))
             .setTitle(stream.title) // Title of the Download Notification
             .setDescription(stream.title) // Description of the Download Notification
-            .setMimeType(stream.audioStream.mimeType)
+            .setMimeType(stream.mimeType)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE) // Visibility of the download Notification
             .setDestinationUri(Uri.fromFile(downloadsDir)) // Uri of the destination file
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, stream.file())
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, stream.fileName)
             .setAllowedOverMetered(false)
             .setAllowedOverRoaming(false)
         val manager = context.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager

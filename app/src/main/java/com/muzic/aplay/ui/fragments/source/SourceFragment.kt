@@ -6,21 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.muzic.aplay.R
 import com.muzic.aplay.ui.inflateMenu
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import kotlinx.android.synthetic.main.youtube_fragment.*
 import kotlinx.android.synthetic.main.youtube_fragment.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 class SourceFragment : Fragment() {
 
     private val viewModel: YoutubeViewModel by viewModel()
+
     private val adapter: StreamListAdapter by lazy {
         StreamListAdapter(layoutInflater) {
-            Timber.i(it.toString())
+            viewModel.download(it)
         }
     }
 
@@ -36,6 +38,7 @@ class SourceFragment : Fragment() {
                     DividerItemDecoration.VERTICAL
                 )
             )
+            addSwipe(it)
         }
 
         viewModel.getAllData.observe(viewLifecycleOwner, {
@@ -43,6 +46,18 @@ class SourceFragment : Fragment() {
         })
 
         return view
+    }
+
+    private fun addSwipe(recyclerView: RecyclerView){
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                viewModel.remove(adapter.currentList[viewHolder.adapterPosition])
+            }
+        }).attachToRecyclerView(recyclerView)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

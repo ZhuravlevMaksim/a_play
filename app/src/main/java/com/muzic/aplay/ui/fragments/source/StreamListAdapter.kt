@@ -3,7 +3,6 @@ package com.muzic.aplay.ui.fragments.source
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.muzic.aplay.databinding.StreamRowBinding
@@ -19,28 +18,9 @@ class StreamListAdapter(private val inflater: LayoutInflater, private val onClic
         }
     }
 
-    private var dataList = emptyList<YoutubeStream>()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = Holder(StreamRowBinding.inflate(inflater, parent, false), onClick)
 
     override fun onBindViewHolder(holder: Holder, position: Int) = holder.bind(getItem(position))
-
-    private fun setup(){
-//        binding
-    }
-
-    private fun swipeToDelete(view: RecyclerView){
-        ItemTouchHelper(object : SwipeToDelete(){
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                super.onSwiped(viewHolder, direction)
-            }
-        }).attachToRecyclerView(view)
-    }
-
-    fun setData(data: List<YoutubeStream>){
-         this.dataList = data
-        notifyDataSetChanged()
-    }
 
 }
 
