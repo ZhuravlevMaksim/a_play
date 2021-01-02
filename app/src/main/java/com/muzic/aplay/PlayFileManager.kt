@@ -46,7 +46,7 @@ class PlayFileManager(private val context: Context) {
         generateSequence {
             while (moveToNext()) {
 //                if (this.getString(8).contains("audio")) {
-                    return@generateSequence predicate(this)
+                return@generateSequence predicate(this)
 //                } else continue
             }
             null
@@ -65,7 +65,7 @@ class PlayFileManager(private val context: Context) {
         this.getString(9)
     )
 
-    data class AudioFile (
+    data class AudioFile(
         val displayName: String,
         val dateModified: String?,
         val dateAdded: String?,
@@ -78,10 +78,10 @@ class PlayFileManager(private val context: Context) {
         val title: String?
     )
 
-    private fun doc(uri: Uri){
+    private fun doc(uri: Uri) {
         val fromTreeUri = DocumentFile.fromTreeUri(context, uri)
 
-        if(fromTreeUri!!.isDirectory) {
+        if (fromTreeUri!!.isDirectory) {
             fromTreeUri.listFiles().forEach { documentFile ->
                 Log.i("TAG DIR", documentFile.uri.path!!)
                 doc(documentFile.uri)
