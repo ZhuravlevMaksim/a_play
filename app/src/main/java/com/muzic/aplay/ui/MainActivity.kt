@@ -7,11 +7,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.muzic.aplay.R
+import com.muzic.aplay.databinding.ActivityMainBinding
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+private lateinit var binding: ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,13 +22,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
             (it as NavHostFragment).navController.also { controller -> navController = controller }
         }
 
-        bottomNavigation.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.player_page -> navController.navigate(R.id.audioListFragment)
                 R.id.podcast_page -> navController.navigate(R.id.podcastFragment)
@@ -48,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleIntent(intent: Intent?) {
         intent?.let {
             intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                bottomNavigation.selectedItemId = R.id.source_page
+                binding.bottomNavigation.selectedItemId = R.id.source_page
                 navController.navigate(R.id.sourceFragment, Bundle().apply {
                     this.putString("url", it)
                 })
@@ -58,14 +61,14 @@ class MainActivity : AppCompatActivity() {
 }
 
 fun Fragment.setTopAppBarTitle(title: String) {
-    activity?.topAppBar?.title = title
+    binding.topAppBar.title = title
 }
 
 fun Fragment.inflateMenu(title: String, menu: Int) {
-    activity?.topAppBar?.title = title
-    activity?.topAppBar?.inflateMenu(menu)
+    binding.topAppBar.title = title
+    binding.topAppBar.inflateMenu(menu)
 }
 
 fun Fragment.inflateMenu(menu: Int) {
-    activity?.topAppBar?.inflateMenu(menu)
+    binding.topAppBar.inflateMenu(menu)
 }

@@ -1,2 +1,2 @@
 rootProject.name='A play'
-include ':app',  ':player'
+include ':app',  ':player', ':youtube-stream-extractor'

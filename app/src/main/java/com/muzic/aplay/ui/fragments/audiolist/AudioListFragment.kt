@@ -8,25 +8,25 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.muzic.aplay.R
+import com.muzic.aplay.databinding.AudioListFragmentBinding
 import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.ui.inflateMenu
-import kotlinx.android.synthetic.main.audio_list_fragment.*
 import timber.log.Timber
 
 
 class AudioListFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.audio_list_fragment, container, false)
+    private var audioListBinding: AudioListFragmentBinding? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-//        topAppBar.inflateMenu(R.menu.actions)
-//        topAppBar.setOnMenuItemClickListener
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val binding = AudioListFragmentBinding.inflate(inflater, container, false)
+
+        audioListBinding = binding
+
         val adapter = AudioListAdapter(layoutInflater) {
             Timber.i(it.id)
         }
-        items.apply {
+        binding.items.apply {
             setAdapter(adapter)
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(
@@ -37,11 +37,19 @@ class AudioListFragment : Fragment() {
             )
         }
         adapter.submitList(AudioRepository.items)
+
+        return binding.root
     }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         inflateMenu("A Player", R.menu.player_menu)
+    }
+
+    override fun onDestroyView() {
+        audioListBinding = null
+        super.onDestroyView()
     }
 
 }

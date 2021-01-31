@@ -37,8 +37,7 @@ class PlayFileServer {
 
         val serverFactory = FtpServerFactory()
         serverFactory.addListener("default", factory.createListener())
-
-
+        
         val connectionConfigFactory = ConnectionConfigFactory()
         connectionConfigFactory.isAnonymousLoginEnabled = true
         connectionConfigFactory.maxLoginFailures = 5

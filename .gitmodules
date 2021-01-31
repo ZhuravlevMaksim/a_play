@@ -1,0 +1,3 @@
+[submodule "youtube-stream-extractor"]
+	path = youtube-stream-extractor
+	url = https://github.com/ZhuravlevMaksim/youtube-stream-extractor.git

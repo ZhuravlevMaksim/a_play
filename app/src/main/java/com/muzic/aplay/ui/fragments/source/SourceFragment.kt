@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.muzic.aplay.R
+import com.muzic.aplay.databinding.YoutubeFragmentBinding
 import com.muzic.aplay.ui.inflateMenu
 import com.muzic.aplay.viewmodels.YoutubeViewModel
-import kotlinx.android.synthetic.main.youtube_fragment.*
-import kotlinx.android.synthetic.main.youtube_fragment.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class SourceFragment : Fragment() {
 
+    private var sourceBinding: YoutubeFragmentBinding? = null
     private val viewModel: YoutubeViewModel by viewModel()
 
     private val adapter: StreamListAdapter by lazy {
@@ -26,10 +27,12 @@ class SourceFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.youtube_fragment, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val binding = YoutubeFragmentBinding.inflate(inflater, container, false)
 
-        view.recyclerView?.let {
+        sourceBinding = binding
+
+        binding.recyclerView.let {
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(requireActivity())
             it.addItemDecoration(
@@ -45,7 +48,7 @@ class SourceFragment : Fragment() {
             adapter.submitList(it)
         })
 
-        return view
+        return binding.root
     }
 
     private fun addSwipe(recyclerView: RecyclerView){
@@ -66,9 +69,14 @@ class SourceFragment : Fragment() {
         inflateMenu("A Source", R.menu.source_menu)
 
         arguments?.getString("url")?.let {
-            urlInput.setText(it)
+            sourceBinding?.urlInput?.setText(it)
             viewModel.getStreamFromUrl(it)
         }
+    }
+
+    override fun onDestroyView() {
+        sourceBinding = null
+        super.onDestroyView()
     }
 
 }
