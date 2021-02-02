@@ -63,12 +63,3 @@ class MainActivity : AppCompatActivity() {
 fun Fragment.setTopAppBarTitle(title: String) {
     binding.topAppBar.title = title
 }
-
-fun Fragment.inflateMenu(title: String, menu: Int) {
-    binding.topAppBar.title = title
-    binding.topAppBar.inflateMenu(menu)
-}
-
-fun Fragment.inflateMenu(menu: Int) {
-    binding.topAppBar.inflateMenu(menu)
-}

@@ -9,9 +9,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.muzic.aplay.R
 import com.muzic.aplay.databinding.YoutubeFragmentBinding
-import com.muzic.aplay.ui.inflateMenu
+import com.muzic.aplay.ui.setTopAppBarTitle
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -48,6 +47,8 @@ class SourceFragment : Fragment() {
             adapter.submitList(it)
         })
 
+        setTopAppBarTitle("A Source")
+
         return binding.root
     }
 
@@ -65,8 +66,6 @@ class SourceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        inflateMenu("A Source", R.menu.source_menu)
 
         arguments?.getString("url")?.let {
             sourceBinding?.urlInput?.setText(it)

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.muzic.aplay.databinding.RadioFragmentBinding
+import com.muzic.aplay.ui.setTopAppBarTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -49,7 +50,7 @@ class RadioFragment : Fragment() {
 //            radioAdapter.submitList(it.toMutableList())
 //        }
 //        radioViewModel.request(itsAdressWWWTopVote)
-//        setTopAppBarTitle("A Radio")
+        setTopAppBarTitle("A Radio")
 
         return binding.root
     }
