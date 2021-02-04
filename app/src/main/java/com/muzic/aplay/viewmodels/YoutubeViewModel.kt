@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.muzic.aplay.PlayDownloadManager
 import com.muzic.aplay.db.YoutubeStream
 import com.muzic.aplay.db.YoutubeStreamDatabase
+import com.ystract.YoutubeStreamExtractor
 import com.ystract.services.AudioStreamInfo
-import com.ystract.services.YoutubeService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,9 +24,9 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
             Timber.i("Uid ${extract.first.name} ${extract.second}")
             extract.second?.let { uid ->
                 if (extract.first == TYPE.PLAYLIST) {
-                    YoutubeService().fromPlaylist(uid) { insert(it) }
+                    YoutubeStreamExtractor.streamsFromPlaylist(uid) { insert(it) }
                 } else {
-                    YoutubeService().fromVideo(uid)?.let { insert(it) }
+                    YoutubeStreamExtractor.streamFromVideo(uid)?.let { insert(it) }
                 }
             }
         }
@@ -44,7 +44,9 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
     )
 
     public fun download(stream: YoutubeStream) {
-        downloadManager.downloadWithAndroidManager(stream)
+        viewModelScope.launch(Dispatchers.IO) {
+            downloadManager.downloadWithAndroidManager(stream)
+        }
     }
 
     private fun extractUid(url: String): Pair<TYPE, String?> {

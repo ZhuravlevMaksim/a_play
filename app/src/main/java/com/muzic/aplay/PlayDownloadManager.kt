@@ -8,8 +8,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.muzic.aplay.db.YoutubeStream
+import com.ystract.YoutubeStreamExtractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -17,9 +19,7 @@ import okhttp3.Request
 import okio.buffer
 import okio.sink
 
-class PlayDownloadManager(private val context: Context) {
-
-    private val client = OkHttpClient()
+class PlayDownloadManager(private val context: Context, private val client: OkHttpClient) {
 
     suspend fun download(url: String, filename: String, mimeType: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -63,17 +63,41 @@ class PlayDownloadManager(private val context: Context) {
     }
 
     fun downloadWithAndroidManager(stream: YoutubeStream) {
-        val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-        val request = DownloadManager.Request(Uri.parse(stream.url))
-            .setTitle(stream.title) // Title of the Download Notification
-            .setDescription(stream.title) // Description of the Download Notification
-            .setMimeType(stream.mimeType)
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE) // Visibility of the download Notification
-            .setDestinationUri(Uri.fromFile(downloadsDir)) // Uri of the destination file
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, stream.fileName)
-            .setAllowedOverMetered(false)
-            .setAllowedOverRoaming(false)
-        val manager = context.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager
-        manager.enqueue(request)
+        fun download() {
+            val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+            val request = DownloadManager.Request(Uri.parse(stream.url))
+                .setTitle(stream.title) // Title of the Download Notification
+                .setDescription(stream.title) // Description of the Download Notification
+                .setMimeType(stream.mimeType)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE) // Visibility of the download Notification
+                .setDestinationUri(Uri.fromFile(downloadsDir)) // Uri of the destination file
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, stream.fileName)
+                .setAllowedOverMetered(false)
+                .setAllowedOverRoaming(false)
+            val manager = context.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager
+            manager.enqueue(request)
+        }
+
+        //todo: fix rotten link or save stream as file or e.t.c
+        if (checkStreamLinkNotExpired(stream)) {
+            download()
+        } else {
+            Toast.makeText(context, stream.title + " link rotten (refreshing...)", Toast.LENGTH_SHORT).show()
+            val freshStream = YoutubeStreamExtractor.streamFromVideo(stream.uid)
+            freshStream?.let {
+                Toast.makeText(context, "done", Toast.LENGTH_SHORT).show()
+                stream.url = it.audioStream.url
+                download()
+            }
+        }
+    }
+
+    private fun checkStreamLinkNotExpired(stream: YoutubeStream): Boolean {
+        client.newCall(
+            Request.Builder()
+                .url(stream.url)
+                .head()
+                .build()
+        ).execute().use { response -> return response.isSuccessful }
     }
 }

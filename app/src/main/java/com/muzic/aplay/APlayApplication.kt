@@ -19,7 +19,7 @@ class APlayApplication : Application() {
     private val module = module {
         single { OkHttpClient() }
         single { PlayFileManager(get()) }
-        single { PlayDownloadManager(get()) }
+        single { PlayDownloadManager(get(), get()) }
         viewModel { FileManagerViewModel(get()) }
         viewModel { YoutubeViewModel(get(), get()) }
         viewModel { TitleViewModel() }
