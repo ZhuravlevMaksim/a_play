@@ -24,7 +24,7 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
             Timber.i("Uid ${extract.first.name} ${extract.second}")
             extract.second?.let { uid ->
                 if (extract.first == TYPE.PLAYLIST) {
-                    YoutubeStreamExtractor.streamsFromPlaylist(uid) { insert(it) }
+                    YoutubeStreamExtractor.streamsFromPlaylist(uid).forEach { insert(it) }
                 } else {
                     YoutubeStreamExtractor.streamFromVideo(uid)?.let { insert(it) }
                 }
@@ -36,7 +36,7 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
         YoutubeStream(
             uid = stream.uid,
             url = stream.audioStream.url,
-            contentLength = stream.audioStream.contentLength,
+            contentLength = stream.lengthSeconds,
             fileName = stream.file(),
             mimeType = stream.audioStream.mimeType,
             title = stream.title

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.muzic.aplay.db.YoutubeStream
 import com.ystract.YoutubeStreamExtractor
@@ -82,10 +81,8 @@ class PlayDownloadManager(private val context: Context, private val client: OkHt
         if (checkStreamLinkNotExpired(stream)) {
             download()
         } else {
-            Toast.makeText(context, stream.title + " link rotten (refreshing...)", Toast.LENGTH_SHORT).show()
-            val freshStream = YoutubeStreamExtractor.streamFromVideo(stream.uid)
+            val freshStream = YoutubeStreamExtractor.streamFromVideo(stream.uid, true)
             freshStream?.let {
-                Toast.makeText(context, "done", Toast.LENGTH_SHORT).show()
                 stream.url = it.audioStream.url
                 download()
             }
@@ -93,11 +90,14 @@ class PlayDownloadManager(private val context: Context, private val client: OkHt
     }
 
     private fun checkStreamLinkNotExpired(stream: YoutubeStream): Boolean {
-        client.newCall(
-            Request.Builder()
-                .url(stream.url)
-                .head()
-                .build()
-        ).execute().use { response -> return response.isSuccessful }
+        if (stream.url != null){
+            client.newCall(
+                Request.Builder()
+                    .url(stream.url!!)
+                    .head()
+                    .build()
+            ).execute().use { response -> return response.isSuccessful }
+        }
+        return false
     }
 }
