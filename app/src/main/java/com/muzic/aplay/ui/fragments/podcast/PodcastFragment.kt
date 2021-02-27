@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class PodcastFragment : Fragment() {
 
-    val TAG = javaClass.simpleName
+    private val TAG = javaClass.simpleName
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.podcast_fragment, container, false)
@@ -22,11 +22,8 @@ class PodcastFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         setTopAppBarTitle("A Podcast")
 
-        val itunesService = ItunesService.instance
-        val itunesRepo = ItunesRepo(itunesService)
-        itunesRepo.searchByTerm("Android Developer") {
-            Timber.i(TAG, "Results = $it")
-        }
+        performSearch("Android Developer")
+
     }
 
     private fun handleIntent(intent: Intent) {
@@ -41,25 +38,13 @@ class PodcastFragment : Fragment() {
         val itunesRepo = ItunesRepo(itunesService)
         itunesRepo.searchByTerm(term) {
             Timber.i(TAG, "Results = $it")
+
+            it?.forEach {
+                //fixme
+                PodcastRepo(RssFeedService()).getPodcast(it.feedUrl) {
+                    Timber.i(TAG, "Podcast = $it")
+                }
+            }
         }
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//
-//            val inflater = menuInflater
-//            inflater.inflate(R.menu.menu_search, menu)
-//            val searchMenuItem = menu.findItem(R.id.search_item)
-//            val searchView = searchMenuItem?.actionView as SearchView
-//
-//            val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-//
-//            searchView.setSearchableInfo(
-//                searchManager.getSearchableInfo(componentName)
-//            )
-//            return true
-//        }
-//    }
-
-
 }

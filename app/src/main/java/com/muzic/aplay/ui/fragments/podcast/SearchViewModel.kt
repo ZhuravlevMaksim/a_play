@@ -19,14 +19,7 @@ class SearchViewModel(application: Application) :
     }
 }
 
-data class PodcastSummaryViewData(
-    var name: String? = "",
-    var lastUpdated: String? = "",
-    var imageUrl: String? = "",
-    var feedUrl: String? = ""
-)
-
-private fun itunesPodcastToPodcastSummaryView(itunesPodcast: PodcastResponse.ItunesPodcast): PodcastSummaryViewData {
+internal fun itunesPodcastToPodcastSummaryView(itunesPodcast: PodcastResponse.ItunesPodcast): PodcastSummaryViewData {
     return PodcastSummaryViewData(
         itunesPodcast.collectionCensoredName,
         itunesPodcast.releaseDate,
