@@ -1,13 +1,14 @@
 package com.muzic.aplay.db
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
+import java.util.*
 
-@Database(entities = [YoutubeStream::class], version = 1, exportSchema = false)
+@Database(entities = [YoutubeStream::class, Podcast::class, Episode::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class YoutubeStreamDatabase : RoomDatabase() {
-    abstract fun dao(): YoutubeStreamRepository
+    abstract fun youtubeDao(): YoutubeStreamDao
+    abstract fun podcastDao(): PodcastDao
 
     companion object {
         @Volatile
@@ -21,5 +22,16 @@ abstract class YoutubeStreamDatabase : RoomDatabase() {
                 INSTANCE!!
             }
         }
+    }
+}
+
+class Converters {
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return if (value == null) null else Date(value)
+    }
+    @TypeConverter
+    fun toTimestamp(date: Date?): Long? {
+        return (date?.time)
     }
 }

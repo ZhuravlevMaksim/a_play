@@ -1,6 +1,7 @@
 package com.muzic.aplay
 
 import android.app.Application
+import com.muzic.aplay.ui.fragments.podcast.PodcastRepo
 import com.muzic.aplay.ui.fragments.radio.RadioViewModel
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
@@ -20,6 +21,7 @@ class APlayApplication : Application() {
         single { OkHttpClient() }
         single { PlayFileManager(get()) }
         single { PlayDownloadManager(get(), get()) }
+        single { PodcastRepo(get(), get()) }
         viewModel { FileManagerViewModel(get()) }
         viewModel { YoutubeViewModel(get(), get()) }
         viewModel { TitleViewModel() }

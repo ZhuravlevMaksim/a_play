@@ -2,6 +2,8 @@ package com.muzic.aplay.ui.fragments.podcast
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.muzic.aplay.db.PodcastResponse
+import com.muzic.aplay.db.PodcastSummaryViewData
 
 class SearchViewModel(application: Application) :
     AndroidViewModel(application) {

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
-interface YoutubeStreamRepository {
+interface YoutubeStreamDao {
 
     @Query("SELECT * FROM youtube_stream_table ORDER BY id ASC")
     fun getAllData(): LiveData<List<YoutubeStream>>

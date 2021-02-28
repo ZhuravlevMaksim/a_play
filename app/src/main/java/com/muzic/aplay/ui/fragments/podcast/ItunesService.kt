@@ -1,5 +1,6 @@
 package com.muzic.aplay.ui.fragments.podcast
 
+import com.muzic.aplay.db.PodcastResponse
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

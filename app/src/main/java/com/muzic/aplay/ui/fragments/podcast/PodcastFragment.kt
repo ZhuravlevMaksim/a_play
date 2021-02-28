@@ -9,11 +9,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.muzic.aplay.R
 import com.muzic.aplay.ui.setTopAppBarTitle
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 class PodcastFragment : Fragment() {
 
     private val TAG = javaClass.simpleName
+    private val podcastRepo by inject<PodcastRepo>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.podcast_fragment, container, false)
@@ -40,8 +42,7 @@ class PodcastFragment : Fragment() {
             Timber.i(TAG, "Results = $it")
 
             it?.forEach {
-                //fixme
-                PodcastRepo(RssFeedService()).getPodcast(it.feedUrl) {
+                podcastRepo.getPodcast(it.feedUrl) {
                     Timber.i(TAG, "Podcast = $it")
                 }
             }

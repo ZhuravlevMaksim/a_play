@@ -1,5 +1,6 @@
 package com.muzic.aplay.ui.fragments.podcast
 
+import com.muzic.aplay.db.RssFeedResponse
 import okhttp3.*
 import okio.IOException
 import org.w3c.dom.Node

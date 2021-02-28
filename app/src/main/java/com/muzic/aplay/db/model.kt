@@ -1,9 +1,22 @@
-package com.muzic.aplay.ui.fragments.podcast
+package com.muzic.aplay.db
 
+import androidx.room.*
 import java.util.*
 
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Podcast::class,
+            parentColumns = ["id"],
+            childColumns = ["podcastId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("podcastId")]
+)
 data class Episode(
-    var guid: String = "",
+    @PrimaryKey var guid: String = "",
+    var podcastId: Long? = null,
     var title: String = "",
     var description: String = "",
     var mediaUrl: String = "",
@@ -28,12 +41,15 @@ data class PodcastSummaryViewData(
     var feedUrl: String? = ""
 )
 
+@Entity
 data class Podcast(
+    @PrimaryKey(autoGenerate = true) var id: Long? = null,
     var feedUrl: String = "",
     var feedTitle: String = "",
     var feedDesc: String = "",
     var imageUrl: String = "",
     var lastUpdated: Date = Date(),
+    @Ignore
     var episodes: List<Episode> = listOf()
 )
 

@@ -15,7 +15,7 @@ import timber.log.Timber
 
 class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context: Context) : ViewModel() {
 
-    private val dao = YoutubeStreamDatabase.get(context).dao()
+    private val dao = YoutubeStreamDatabase.get(context).youtubeDao()
     public val getAllData = dao.getAllData()
 
     fun getStreamFromUrl(url: String) {

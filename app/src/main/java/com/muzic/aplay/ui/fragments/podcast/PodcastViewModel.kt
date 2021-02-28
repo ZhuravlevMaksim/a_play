@@ -2,11 +2,15 @@ package com.muzic.aplay.ui.fragments.podcast
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.muzic.aplay.db.Episode
+import com.muzic.aplay.db.Podcast
+import com.muzic.aplay.db.PodcastSummaryViewData
 import java.util.*
 
-class PodcastViewModel(application: Application) : AndroidViewModel(application) {
-    var podcastRepo: PodcastRepo? = null
+class PodcastViewModel(application: Application, private val podcastRepo: PodcastRepo?) : AndroidViewModel(application) {
+
     var activePodcastViewData: PodcastViewData? = null
+    private var activePodcast: Podcast? = null
 
     data class PodcastViewData(
         var subscribed: Boolean = false,
@@ -25,6 +29,13 @@ class PodcastViewModel(application: Application) : AndroidViewModel(application)
         var releaseDate: Date? = null,
         var duration: String? = ""
     )
+
+    fun saveActivePodcast() {
+        val repo = podcastRepo ?: return
+        activePodcast?.let {
+            repo.save(it)
+        }
+    }
 
     private fun episodesToEpisodesView(episodes: List<Episode>): List<EpisodeViewData> {
         return episodes.map {
