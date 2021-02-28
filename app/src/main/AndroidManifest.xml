@@ -37,6 +37,13 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".ui.fragments.podcast.PodcastMediaService">
+            <intent-filter>
+                <action
+                    android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
         <!--            Player          -->
 
         <!--        <service-->
