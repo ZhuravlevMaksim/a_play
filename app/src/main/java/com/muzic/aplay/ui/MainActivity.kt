@@ -1,13 +1,16 @@
 package com.muzic.aplay.ui
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.muzic.aplay.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
+import com.muzic.aplay.permissions
 import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -22,8 +25,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        val permissions = permissions()
+
+        if (permissions) {
+            initFragments()
+        } else {
+            setContentView(R.layout.no_permissions)
+        }
+    }
+
+    private fun initFragments() {
         setContentView(binding.root)
 
         supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
@@ -46,6 +59,17 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleIntent(intent)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_READ_EXTERNAL_STORAGE -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                   initFragments()
+                }
+            }
+        }
     }
 
     private fun handleIntent(intent: Intent?) {
