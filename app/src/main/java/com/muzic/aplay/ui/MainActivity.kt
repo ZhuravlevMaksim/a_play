@@ -10,16 +10,14 @@ import com.muzic.aplay.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
 import com.muzic.aplay.permissions
-import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val fileViewModel: FileManagerViewModel by viewModel()
     private val titleViewModel: TitleViewModel by viewModel()
+    private var binding: ActivityMainBinding? = null
     private lateinit var navController: NavController
-    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,26 +33,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFragments() {
-        setContentView(binding.root)
-        titleViewModel.title.observe(this) {
-            binding.topAppBar.title = it
-        }
-
-        supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
-            (it as NavHostFragment).navController.also { controller -> navController = controller }
-        }
-
-        binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.player_page -> navController.navigate(R.id.audioListFragment)
-                R.id.podcast_page -> navController.navigate(R.id.podcastFragment)
-                R.id.radio_page -> navController.navigate(R.id.radioFragment)
-                R.id.source_page -> navController.navigate(R.id.sourceFragment)
+        binding?.let { binding ->
+            setContentView(binding.root)
+            titleViewModel.title.observe(this) {
+                binding.topAppBar.title = it
             }
-            true
-        }
 
-        handleIntent(intent)
+            supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
+                (it as NavHostFragment).navController.also { controller -> navController = controller }
+            }
+
+            binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.player_page -> navController.navigate(R.id.audioListFragment)
+                    R.id.podcast_page -> navController.navigate(R.id.podcastFragment)
+                    R.id.radio_page -> navController.navigate(R.id.radioFragment)
+                    R.id.source_page -> navController.navigate(R.id.sourceFragment)
+                }
+                true
+            }
+
+            handleIntent(intent)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             PERMISSION_REQUEST_READ_EXTERNAL_STORAGE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                   initFragments()
+                    initFragments()
                 }
             }
         }
@@ -76,11 +76,16 @@ class MainActivity : AppCompatActivity() {
     private fun handleIntent(intent: Intent?) {
         intent?.let {
             intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                binding.bottomNavigation.selectedItemId = R.id.source_page
+                binding!!.bottomNavigation.selectedItemId = R.id.source_page
                 navController.navigate(R.id.sourceFragment, Bundle().apply {
                     this.putString("url", it)
                 })
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
     }
 }

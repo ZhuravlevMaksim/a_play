@@ -5,7 +5,6 @@ import com.muzic.aplay.db.YoutubeStreamDatabase
 import com.muzic.aplay.ui.fragments.podcast.FeedService
 import com.muzic.aplay.ui.fragments.podcast.PodcastRepo
 import com.muzic.aplay.ui.fragments.radio.RadioViewModel
-import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.MusicViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
@@ -22,10 +21,8 @@ class APlayApplication : Application() {
 
     private val module = module {
         single { OkHttpClient() }
-        single { PlayFileManager(get()) }
         single { PlayDownloadManager(get(), get()) }
         single { PodcastRepo(FeedService.instance,  YoutubeStreamDatabase.get(androidContext()).podcastDao()) }
-        viewModel { FileManagerViewModel(get()) }
         viewModel { YoutubeViewModel(get(), get()) }
         viewModel { TitleViewModel() }
         viewModel { MusicViewModel() }
