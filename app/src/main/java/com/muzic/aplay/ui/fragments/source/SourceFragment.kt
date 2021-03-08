@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.muzic.aplay.databinding.YoutubeFragmentBinding
-import com.muzic.aplay.ui.setTopAppBarTitle
+import com.muzic.aplay.viewmodels.TitleViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -19,6 +20,7 @@ class SourceFragment : Fragment() {
 
     private var sourceBinding: YoutubeFragmentBinding? = null
     private val viewModel: YoutubeViewModel by viewModel()
+    private val titleViewModel: TitleViewModel by activityViewModels()
 
     private val adapter: StreamListAdapter by lazy {
         StreamListAdapter(layoutInflater) {
@@ -47,7 +49,7 @@ class SourceFragment : Fragment() {
             adapter.submitList(it)
         })
 
-        setTopAppBarTitle("A Source")
+        titleViewModel.setTopAppBarTitle("A Source")
 
         return binding.root
     }

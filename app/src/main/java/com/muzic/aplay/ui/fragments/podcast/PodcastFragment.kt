@@ -15,8 +15,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import com.muzic.aplay.R
-import com.muzic.aplay.ui.setTopAppBarTitle
+import com.muzic.aplay.viewmodels.TitleViewModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -24,13 +25,14 @@ class PodcastFragment : Fragment() {
 
     private val TAG = javaClass.simpleName
     private val podcastRepo by inject<PodcastRepo>()
+    private val titleViewModel: TitleViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.podcast_fragment, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        setTopAppBarTitle("A Podcast")
+        titleViewModel.setTopAppBarTitle("A Podcast")
 
         initMediaBrowser()
         performSearch("Android Developer")

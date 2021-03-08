@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.muzic.aplay.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
@@ -15,13 +14,12 @@ import com.muzic.aplay.viewmodels.FileManagerViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private lateinit var binding: ActivityMainBinding
-
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: FileManagerViewModel by viewModel()
+    private val fileViewModel: FileManagerViewModel by viewModel()
     private val titleViewModel: TitleViewModel by viewModel()
     private lateinit var navController: NavController
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +36,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initFragments() {
         setContentView(binding.root)
+        titleViewModel.title.observe(this) {
+            binding.topAppBar.title = it
+        }
 
         supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
             (it as NavHostFragment).navController.also { controller -> navController = controller }
@@ -82,8 +83,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-}
-
-fun Fragment.setTopAppBarTitle(title: String) {
-    binding.topAppBar.title = title
 }
