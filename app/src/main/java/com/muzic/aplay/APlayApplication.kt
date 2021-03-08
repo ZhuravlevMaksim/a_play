@@ -6,6 +6,7 @@ import com.muzic.aplay.ui.fragments.podcast.FeedService
 import com.muzic.aplay.ui.fragments.podcast.PodcastRepo
 import com.muzic.aplay.ui.fragments.radio.RadioViewModel
 import com.muzic.aplay.viewmodels.FileManagerViewModel
+import com.muzic.aplay.viewmodels.MusicViewModel
 import com.muzic.aplay.viewmodels.TitleViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient
@@ -27,6 +28,7 @@ class APlayApplication : Application() {
         viewModel { FileManagerViewModel(get()) }
         viewModel { YoutubeViewModel(get(), get()) }
         viewModel { TitleViewModel() }
+        viewModel { MusicViewModel() }
         viewModel { RadioViewModel(get()) }
     }
 
