@@ -8,36 +8,20 @@
             type="com.muzic.aplay.ui.fragments.audiolist.AudioRowHolder" />
         <variable
             name="audio"
-            type="com.muzic.aplay.db.AudioFile" />
+            type="com.muzic.aplay.model.Audio" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <CheckBox
-            android:id="@+id/desc"
-            android:onClick="@{(e) -> holder.onClick.invoke(audio)}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:text="@{audio.id}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            app:formattedDate="@{audio.date}"
+            android:onClick="@{(e) -> holder.onClick.invoke(audio)}"
+            android:text="@{audio.title}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/desc" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

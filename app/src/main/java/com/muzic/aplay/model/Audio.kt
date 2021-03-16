@@ -3,7 +3,7 @@ package com.muzic.aplay.model
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Music(
+data class Audio(
     val artist: String?,
     val year: Int,
     val track: Int,

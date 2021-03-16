@@ -6,7 +6,7 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import com.muzic.aplay.ui.MainActivity
 
 
-public const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 6873
+const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 6873
 
 fun MainActivity.permissions(): Boolean {
     if (PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {

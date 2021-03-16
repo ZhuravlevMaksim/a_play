@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
 
         val permissions = permissions()
 
@@ -33,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFragments() {
+        if (binding == null) {
+            binding = ActivityMainBinding.inflate(layoutInflater)
+        }
+
         binding?.let { binding ->
             setContentView(binding.root)
             titleViewModel.title.observe(this) {

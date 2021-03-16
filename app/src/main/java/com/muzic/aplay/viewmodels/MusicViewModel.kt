@@ -5,15 +5,15 @@ import android.provider.MediaStore
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.muzic.aplay.model.Music
+import com.muzic.aplay.model.Audio
 
 class MusicViewModel : ViewModel() {
 
-    private val mutMusic: MutableLiveData<List<Music>> by lazy {
-        MutableLiveData<List<Music>>()
+    private val mutAudio: MutableLiveData<List<Audio>> by lazy {
+        MutableLiveData<List<Audio>>()
     }
 
-    val music: LiveData<List<Music>> get() = mutMusic
+    val audio: LiveData<List<Audio>> get() = mutAudio
 
     public fun queryForMusic(application: Application) {
         val projection = arrayOf(
@@ -35,7 +35,7 @@ class MusicViewModel : ViewModel() {
 
         val musicCursor = application.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, sortOrder)
 
-        val list = mutableListOf<Music>()
+        val list = mutableListOf<Audio>()
 
         musicCursor?.use { cursor ->
             val artistIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
@@ -65,7 +65,7 @@ class MusicViewModel : ViewModel() {
                 val audioFolderName = audioRelativePath ?: "/"
 
                 list.add(
-                    Music(
+                    Audio(
                         audioArtist,
                         audioYear,
                         audioTrack,
@@ -82,7 +82,7 @@ class MusicViewModel : ViewModel() {
             }
         }
 
-        mutMusic.value = list
+        mutAudio.value = list
     }
 
 }
