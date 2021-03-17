@@ -4,18 +4,16 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.muzic.aplay.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
 import com.muzic.aplay.permissions
-import com.muzic.aplay.viewmodels.TitleViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SetTitle {
 
-    private val titleViewModel: TitleViewModel by viewModel()
     private var binding: ActivityMainBinding? = null
     private lateinit var navController: NavController
 
@@ -38,9 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         binding?.let { binding ->
             setContentView(binding.root)
-            titleViewModel.title.observe(this) {
-                binding.topAppBar.title = it
-            }
 
             supportFragmentManager.findFragmentById(R.id.navHostFragment).let {
                 (it as NavHostFragment).navController.also { controller -> navController = controller }
@@ -91,4 +86,14 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         binding = null
     }
+
+    override fun setTopBarTitle(title: String) {
+        binding?.topAppBar?.title = title
+    }
 }
+
+interface SetTitle {
+    fun setTopBarTitle(title: String)
+}
+
+fun FragmentActivity.setTopTitle(title: String) = (this as MainActivity).setTopBarTitle(title)

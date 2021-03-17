@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.muzic.aplay.databinding.RadioFragmentBinding
-import com.muzic.aplay.viewmodels.TitleViewModel
+import com.muzic.aplay.ui.setTopTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -19,7 +18,6 @@ class RadioFragment : Fragment() {
 
     private var radioBinding: RadioFragmentBinding? = null
     private val radioViewModel: RadioViewModel by viewModel()
-    private val titleViewModel: TitleViewModel by activityViewModels()
 
     private val itsAdressWWWLocal = "json/stations/bycountryexact/internet?order=clickcount&reverse=true"
     private val itsAdressWWWTopClick = "json/stations/topclick/100"
@@ -52,7 +50,7 @@ class RadioFragment : Fragment() {
 //            radioAdapter.submitList(it.toMutableList())
 //        }
 //        radioViewModel.request(itsAdressWWWTopVote)
-        titleViewModel.setTopAppBarTitle("A Radio")
+        activity?.setTopTitle("A Radio")
 
         return binding.root
     }

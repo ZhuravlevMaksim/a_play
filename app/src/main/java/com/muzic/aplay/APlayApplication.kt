@@ -6,7 +6,6 @@ import com.muzic.aplay.ui.fragments.podcast.FeedService
 import com.muzic.aplay.ui.fragments.podcast.PodcastRepo
 import com.muzic.aplay.ui.fragments.radio.RadioViewModel
 import com.muzic.aplay.viewmodels.MusicViewModel
-import com.muzic.aplay.viewmodels.TitleViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -22,9 +21,8 @@ class APlayApplication : Application() {
     private val module = module {
         single { OkHttpClient() }
         single { PlayDownloadManager(get(), get()) }
-        single { PodcastRepo(FeedService.instance,  YoutubeStreamDatabase.get(androidContext()).podcastDao()) }
+        single { PodcastRepo(FeedService.instance, YoutubeStreamDatabase.get(androidContext()).podcastDao()) }
         viewModel { YoutubeViewModel(get(), get()) }
-        viewModel { TitleViewModel() }
         viewModel { MusicViewModel() }
         viewModel { RadioViewModel(get()) }
     }
