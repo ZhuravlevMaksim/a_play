@@ -5,13 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.recyclical.datasource.emptyDataSource
+import com.afollestad.recyclical.setup
+import com.afollestad.recyclical.withItem
+import com.muzic.aplay.R
 import com.muzic.aplay.databinding.AudioListFragmentBinding
 import com.muzic.aplay.ui.setTopTitle
 import com.muzic.aplay.viewmodels.MusicViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 
 class AudioListFragment : Fragment() {
@@ -19,26 +20,42 @@ class AudioListFragment : Fragment() {
     private var audioListBinding: AudioListFragmentBinding? = null
     private val musicViewModel: MusicViewModel by viewModel()
 
+    private val source = emptyDataSource()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = AudioListFragmentBinding.inflate(inflater, container, false)
 
         audioListBinding = binding
 
-        val adapter = AudioListAdapter(layoutInflater) {
-            Timber.i(it.id.toString())
-        }
-        binding.items.apply {
-            setAdapter(adapter)
-            layoutManager = LinearLayoutManager(context)
-            addItemDecoration(
-                DividerItemDecoration(
-                    activity,
-                    DividerItemDecoration.VERTICAL
-                )
-            )
+        binding.items.let {
+            it.setup {
+
+                withDataSource(source)
+
+                withItem<Row, AudioViewRow>(R.layout.audio_list_row) {
+                    onBind(::AudioViewRow) { _, item ->
+                        title.text = item.title
+                        description.text = item.description
+                    }
+
+                    onClick {
+
+                    }
+
+                    onLongClick {
+
+                    }
+                }
+
+            }
         }
 
-        musicViewModel.audio.observe(viewLifecycleOwner) { list -> adapter.submitList(list) }
+
+        musicViewModel.audio.observe(viewLifecycleOwner) { list ->
+            val groupBy = list.groupBy { it.relativePath }
+            source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs") })
+        }
+
         activity?.let {
             it.setTopTitle("A player")
             musicViewModel.queryForMusic(it.application)
@@ -48,9 +65,12 @@ class AudioListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        audioListBinding = null
         super.onDestroyView()
+        audioListBinding = null
     }
 
 }
+
+data class Row(val title: String?, val description: String?)
+
 
