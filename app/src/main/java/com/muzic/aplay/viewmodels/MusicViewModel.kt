@@ -1,13 +1,15 @@
 package com.muzic.aplay.viewmodels
 
 import android.app.Application
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.muzic.aplay.model.Audio
 
-class MusicViewModel : ViewModel() {
+class MusicViewModel(private val application: Application) : ViewModel() {
 
     private val mutAudio: MutableLiveData<List<Audio>> by lazy {
         MutableLiveData<List<Audio>>()
@@ -15,7 +17,16 @@ class MusicViewModel : ViewModel() {
 
     val audio: LiveData<List<Audio>> get() = mutAudio
 
-    public fun queryForMusic(application: Application) {
+    public fun queryForMusicFromPath(path: String) {
+        mutAudio.value = queryForMusic().filter { it.relativePath == path }
+    }
+
+    public fun queryForAllMusic() {
+        mutAudio.value = queryForMusic()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun queryForMusic(): List<Audio> {
         val projection = arrayOf(
             MediaStore.Audio.AudioColumns.ARTIST,
             MediaStore.Audio.AudioColumns.YEAR,
@@ -27,7 +38,9 @@ class MusicViewModel : ViewModel() {
             MediaStore.Audio.AudioColumns.ALBUM_ID,
             MediaStore.Audio.AudioColumns.BUCKET_DISPLAY_NAME,
             MediaStore.Audio.AudioColumns._ID,
-            MediaStore.MediaColumns.DATE_MODIFIED
+            MediaStore.MediaColumns.DATE_MODIFIED,
+            MediaStore.Audio.AudioColumns.MIME_TYPE,
+            MediaStore.Audio.AudioColumns.SIZE
         )
 
         val selection = "${MediaStore.Audio.AudioColumns.IS_MUSIC} = 1"
@@ -49,6 +62,9 @@ class MusicViewModel : ViewModel() {
             val relativePathIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.BUCKET_DISPLAY_NAME)
             val idIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID)
             val dateAddedIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATE_MODIFIED)
+            val mimeTypeIndex = cursor.getColumnIndex(MediaStore.Audio.AudioColumns.MIME_TYPE)
+            val sizeIndex = cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE)
+
             while (cursor.moveToNext()) {
 
                 val audioId = cursor.getLong(idIndex)
@@ -63,6 +79,8 @@ class MusicViewModel : ViewModel() {
                 val audioRelativePath = cursor.getString(relativePathIndex)
                 val audioDateAdded = cursor.getInt(dateAddedIndex)
                 val audioFolderName = audioRelativePath ?: "/"
+                val mimeType = cursor.getString(mimeTypeIndex)
+                val size = cursor.getDouble(sizeIndex)
 
                 list.add(
                     Audio(
@@ -76,13 +94,15 @@ class MusicViewModel : ViewModel() {
                         albumId,
                         audioFolderName,
                         audioId,
-                        audioDateAdded
+                        audioDateAdded,
+                        mimeType,
+                        size
                     )
                 )
             }
         }
 
-        mutAudio.value = list
+        return list
     }
 
 }

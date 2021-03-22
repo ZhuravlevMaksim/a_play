@@ -5,16 +5,16 @@
         android:enabled="true"
         android:icon="@drawable/ic_baseline_music_note_24"
         android:title="player"/>
-    <item
-        android:id="@+id/podcast_page"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_cast_24"
-        android:title="podcast"/>
-    <item
-        android:id="@+id/radio_page"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_radio_24"
-        android:title="radio"/>
+<!--    <item-->
+<!--        android:id="@+id/podcast_page"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/ic_baseline_cast_24"-->
+<!--        android:title="podcast"/>-->
+<!--    <item-->
+<!--        android:id="@+id/radio_page"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/ic_baseline_radio_24"-->
+<!--        android:title="radio"/>-->
     <item
         android:id="@+id/source_page"
         android:enabled="true"

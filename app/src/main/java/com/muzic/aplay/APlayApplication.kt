@@ -23,7 +23,7 @@ class APlayApplication : Application() {
         single { PlayDownloadManager(get(), get()) }
         single { PodcastRepo(FeedService.instance, YoutubeStreamDatabase.get(androidContext()).podcastDao()) }
         viewModel { YoutubeViewModel(get(), get()) }
-        viewModel { MusicViewModel() }
+        viewModel { MusicViewModel(application = this@APlayApplication) }
         viewModel { RadioViewModel(get()) }
     }
 

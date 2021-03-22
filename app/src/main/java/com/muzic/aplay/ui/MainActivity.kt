@@ -12,7 +12,7 @@ import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
 import com.muzic.aplay.permissions
 
-class MainActivity : AppCompatActivity(), SetTitle {
+class MainActivity : AppCompatActivity(), SetTitle, Navigate {
 
     private var binding: ActivityMainBinding? = null
     private lateinit var navController: NavController
@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity(), SetTitle {
             binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.player_page -> navController.navigate(R.id.audioListFragment)
-                    R.id.podcast_page -> navController.navigate(R.id.podcastFragment)
-                    R.id.radio_page -> navController.navigate(R.id.radioFragment)
+//                    R.id.podcast_page -> navController.navigate(R.id.podcastFragment)
+//                    R.id.radio_page -> navController.navigate(R.id.radioFragment)
                     R.id.source_page -> navController.navigate(R.id.sourceFragment)
                 }
                 true
@@ -90,10 +90,18 @@ class MainActivity : AppCompatActivity(), SetTitle {
     override fun setTopBarTitle(title: String) {
         binding?.topAppBar?.title = title
     }
+
+    override fun navigate(title: Int, bundle: Bundle) {
+        TODO("Not yet implemented")
+    }
 }
 
 interface SetTitle {
     fun setTopBarTitle(title: String)
+}
+
+interface Navigate {
+    fun navigate(title: Int, bundle: Bundle)
 }
 
 fun FragmentActivity.setTopTitle(title: String) = (this as MainActivity).setTopBarTitle(title)

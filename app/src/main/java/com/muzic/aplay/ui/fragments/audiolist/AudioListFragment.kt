@@ -19,6 +19,12 @@ class AudioListFragment : Fragment() {
 
     private var audioListBinding: AudioListFragmentBinding? = null
     private val musicViewModel: MusicViewModel by viewModel()
+    private var rowView: RowView = RowView.FOLDER
+
+    enum class RowView {
+        FOLDER,
+        SONG
+    }
 
     private val source = emptyDataSource()
 
@@ -39,29 +45,48 @@ class AudioListFragment : Fragment() {
                     }
 
                     onClick {
-
+                        onRowClick(item)
                     }
 
-                    onLongClick {
-
+                    onLongClick { index ->
+                        onRowLongClick(item, it.findViewHolderForAdapterPosition(index)?.itemView)
                     }
+
                 }
 
             }
         }
 
-
         musicViewModel.audio.observe(viewLifecycleOwner) { list ->
-            val groupBy = list.groupBy { it.relativePath }
-            source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs") })
+
+            when (rowView) {
+                RowView.FOLDER -> {
+                    val groupBy = list.groupBy { it.relativePath }
+                    source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs", true) })
+                }
+                RowView.SONG -> {
+                    source.set(list.map { Row(it.title, it.details(), false) })
+                }
+            }
         }
 
         activity?.let {
             it.setTopTitle("A player")
-            musicViewModel.queryForMusic(it.application)
+            musicViewModel.queryForAllMusic()
         }
 
         return binding.root
+    }
+
+    private fun onRowClick(item: Row) {
+        if (item.folder) {
+            rowView = RowView.SONG
+            item.title?.let { musicViewModel.queryForMusicFromPath(it) }
+        }
+    }
+
+    private fun onRowLongClick(item: Row, itemView: View?) {
+        TODO("Not yet imlemented")
     }
 
     override fun onDestroyView() {
@@ -71,6 +96,4 @@ class AudioListFragment : Fragment() {
 
 }
 
-data class Row(val title: String?, val description: String?)
-
-
+data class Row(val title: String?, val description: String?, val folder: Boolean = false)

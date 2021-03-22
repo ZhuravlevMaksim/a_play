@@ -20,11 +20,11 @@ class SourceFragment : Fragment() {
     private var sourceBinding: YoutubeFragmentBinding? = null
     private val viewModel: YoutubeViewModel by viewModel()
 
-    private val adapter: StreamListAdapter by lazy {
-        StreamListAdapter(layoutInflater) {
-            viewModel.download(it)
-        }
-    }
+//    private val adapter: StreamListAdapter by lazy {
+//        StreamListAdapter(layoutInflater) {
+//            viewModel.download(it)
+//        }
+//    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = YoutubeFragmentBinding.inflate(inflater, container, false)
@@ -32,7 +32,7 @@ class SourceFragment : Fragment() {
         sourceBinding = binding
 
         binding.recyclerView.let {
-            it.adapter = adapter
+//            it.adapter = adapter
             it.layoutManager = LinearLayoutManager(requireActivity())
             it.addItemDecoration(
                 DividerItemDecoration(
@@ -44,7 +44,7 @@ class SourceFragment : Fragment() {
         }
 
         viewModel.getAllData.observe(viewLifecycleOwner, {
-            adapter.submitList(it)
+//            adapter.submitList(it)
         })
 
         activity?.setTopTitle("A Source")
@@ -59,7 +59,7 @@ class SourceFragment : Fragment() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                viewModel.remove(adapter.currentList[viewHolder.adapterPosition])
+//                viewModel.remove(adapter.currentList[viewHolder.adapterPosition])
             }
         }).attachToRecyclerView(recyclerView)
     }
