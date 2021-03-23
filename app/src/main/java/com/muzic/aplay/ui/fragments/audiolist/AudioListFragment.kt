@@ -10,6 +10,8 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.AudioListFragmentBinding
+import com.muzic.aplay.ui.fragments.player.FOLDER_INTENT
+import com.muzic.aplay.ui.navigate
 import com.muzic.aplay.ui.setTopTitle
 import com.muzic.aplay.viewmodels.MusicViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -19,12 +21,6 @@ class AudioListFragment : Fragment() {
 
     private var audioListBinding: AudioListFragmentBinding? = null
     private val musicViewModel: MusicViewModel by viewModel()
-    private var rowView: RowView = RowView.FOLDER
-
-    enum class RowView {
-        FOLDER,
-        SONG
-    }
 
     private val source = emptyDataSource()
 
@@ -58,15 +54,8 @@ class AudioListFragment : Fragment() {
         }
 
         musicViewModel.audio.observe(viewLifecycleOwner) { list ->
-
-            when (rowView) {
-                RowView.FOLDER -> {
-                    val groupBy = list.groupBy { it.relativePath }
-                    source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs", true) })
-                }
-                RowView.SONG -> {
-                    source.set(list.map { Row(it.title, it.details(), false) })
-                }
+            list.groupBy { it.relativePath }.let { groupBy ->
+                source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs") })
             }
         }
 
@@ -79,9 +68,8 @@ class AudioListFragment : Fragment() {
     }
 
     private fun onRowClick(item: Row) {
-        if (item.folder) {
-            rowView = RowView.SONG
-            item.title?.let { musicViewModel.queryForMusicFromPath(it) }
+        activity?.let {
+            it.navigate(R.id.playerFragment, Bundle().apply { this.putString(FOLDER_INTENT, item.title) })
         }
     }
 
@@ -96,4 +84,4 @@ class AudioListFragment : Fragment() {
 
 }
 
-data class Row(val title: String?, val description: String?, val folder: Boolean = false)
+data class Row(val title: String?, val description: String?)

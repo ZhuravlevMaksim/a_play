@@ -91,8 +91,8 @@ class MainActivity : AppCompatActivity(), SetTitle, Navigate {
         binding?.topAppBar?.title = title
     }
 
-    override fun navigate(title: Int, bundle: Bundle) {
-        TODO("Not yet implemented")
+    override fun navigate(fragment: Int, bundle: Bundle) {
+        navController.navigate(fragment, bundle)
     }
 }
 
@@ -101,7 +101,9 @@ interface SetTitle {
 }
 
 interface Navigate {
-    fun navigate(title: Int, bundle: Bundle)
+    fun navigate(fragment: Int, bundle: Bundle)
 }
 
 fun FragmentActivity.setTopTitle(title: String) = (this as MainActivity).setTopBarTitle(title)
+
+fun FragmentActivity.navigate(fragment: Int, bundle: Bundle) = (this as MainActivity).navigate(fragment, bundle)

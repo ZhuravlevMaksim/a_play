@@ -20,6 +20,6 @@
         android:label="SourceFragment" />
     <fragment
         android:id="@+id/playerFragment"
-        android:name="com.muzic.aplay.ui.fragments.source.PlayerFragment"
+        android:name="com.muzic.aplay.ui.fragments.player.PlayerFragment"
         android:label="PlayerFragment" />
 </navigation>
