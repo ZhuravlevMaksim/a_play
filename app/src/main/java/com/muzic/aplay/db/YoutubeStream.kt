@@ -14,4 +14,10 @@ data class YoutubeStream(
     var mimeType: String,
     var fileName: String,
     var update: Long = System.currentTimeMillis()
-)
+) {
+    fun details(): String {
+        return "${toRegex.find(mimeType)?.destructured?.component1()}::" + String.format("%.2f Mb", contentLength.toDouble() / 1024 / 1024)
+    }
+}
+
+val toRegex = "\"(.+)\"".toRegex()

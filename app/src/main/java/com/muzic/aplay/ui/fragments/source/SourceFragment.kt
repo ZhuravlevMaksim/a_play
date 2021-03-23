@@ -5,11 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.recyclical.datasource.emptyDataSource
+import com.afollestad.recyclical.setup
+import com.afollestad.recyclical.swipe.SwipeLocation
+import com.afollestad.recyclical.swipe.withSwipeAction
+import com.afollestad.recyclical.withItem
+import com.muzic.aplay.R
 import com.muzic.aplay.databinding.YoutubeFragmentBinding
+import com.muzic.aplay.db.YoutubeStream
+import com.muzic.aplay.ui.fragments.audiolist.AudioViewRow
 import com.muzic.aplay.ui.setTopTitle
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -20,57 +24,59 @@ class SourceFragment : Fragment() {
     private var sourceBinding: YoutubeFragmentBinding? = null
     private val viewModel: YoutubeViewModel by viewModel()
 
-//    private val adapter: StreamListAdapter by lazy {
-//        StreamListAdapter(layoutInflater) {
-//            viewModel.download(it)
-//        }
-//    }
+    private val source = emptyDataSource()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = YoutubeFragmentBinding.inflate(inflater, container, false)
 
         sourceBinding = binding
 
-        binding.recyclerView.let {
-//            it.adapter = adapter
-            it.layoutManager = LinearLayoutManager(requireActivity())
-            it.addItemDecoration(
-                DividerItemDecoration(
-                    activity,
-                    DividerItemDecoration.VERTICAL
-                )
-            )
-            addSwipe(it)
+        arguments?.getString("url")?.let {
+            viewModel.getStreamFromUrl(it)
         }
 
-        viewModel.getAllData.observe(viewLifecycleOwner, {
-//            adapter.submitList(it)
+        binding.youtubeStreams.let {
+            it.setup {
+
+                withDataSource(source)
+
+                withSwipeAction(SwipeLocation.LEFT) {
+                    icon(R.drawable.ic_baseline_delete_24)
+                    text(R.string.delete)
+                    color(R.color.colorPrimary)
+                    callback { index, item ->
+                        viewModel.remove(item as YoutubeStream)
+                        true
+                    }
+                }
+
+                withItem<YoutubeStream, AudioViewRow>(R.layout.audio_list_row) {
+                    onBind(::AudioViewRow) { _, item ->
+                        title.text = item.title
+                        description.text = item.details()
+                    }
+
+                    onClick {
+                        viewModel.download(item)
+                    }
+
+                    onLongClick {
+
+                    }
+
+                }
+
+
+            }
+        }
+
+        viewModel.getAllData.observe(viewLifecycleOwner, { listYoutubeStreams ->
+            source.set(listYoutubeStreams.map { it })
         })
 
         activity?.setTopTitle("A Source")
 
         return binding.root
-    }
-
-    private fun addSwipe(recyclerView: RecyclerView){
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                viewModel.remove(adapter.currentList[viewHolder.adapterPosition])
-            }
-        }).attachToRecyclerView(recyclerView)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        arguments?.getString("url")?.let {
-            sourceBinding?.urlInput?.setText(it)
-            viewModel.getStreamFromUrl(it)
-        }
     }
 
     override fun onDestroyView() {
