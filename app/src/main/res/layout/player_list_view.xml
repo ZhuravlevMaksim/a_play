@@ -7,6 +7,18 @@
     android:focusable="true"
     android:orientation="vertical">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/details_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:collapseIcon="@drawable/ic_baseline_arrow_back_24"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+        app:subtitleTextAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        app:titleTextAppearance="@android:style/TextAppearance.Material.Widget.ActionBar.Title"
+        app:titleTextColor="@color/mediaListBackground"
+        app:subtitleTextColor="@color/mediaListBackground" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/songs"
         android:layout_width="match_parent"

@@ -10,7 +10,9 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.AudioListFragmentBinding
-import com.muzic.aplay.ui.fragments.player.FOLDER_INTENT
+import com.muzic.aplay.ui.fragments.player.PLAYER_FOLDER_INTENT
+import com.muzic.aplay.ui.fragments.player.PLAYER_SUBTITLE_INTENT
+import com.muzic.aplay.ui.fragments.player.PLAYER_TITLE_INTENT
 import com.muzic.aplay.ui.navigate
 import com.muzic.aplay.viewmodels.MusicViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -67,7 +69,11 @@ class AudioListFragment : Fragment() {
 
     private fun onRowClick(item: Row) {
         activity?.let {
-            it.navigate(R.id.playerFragment, Bundle().apply { this.putString(FOLDER_INTENT, item.title) })
+            it.navigate(R.id.playerFragment, Bundle().apply {
+                this.putString(PLAYER_FOLDER_INTENT, item.title)
+                this.putString(PLAYER_TITLE_INTENT, item.title)
+                this.putString(PLAYER_SUBTITLE_INTENT, item.description)
+            })
         }
     }
 
