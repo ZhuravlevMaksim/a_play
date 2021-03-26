@@ -28,25 +28,19 @@ class PlayerFragment : Fragment() {
 
         binding.songs.let {
             it.setup {
-
                 withDataSource(source)
-
                 withItem<Row, AudioViewRow>(R.layout.audio_list_row) {
                     onBind(::AudioViewRow) { _, item ->
                         title.text = item.title
                         description.text = item.description
                     }
-
                     onClick {
 
                     }
-
                     onLongClick {
 
                     }
-
                 }
-
             }
         }
 

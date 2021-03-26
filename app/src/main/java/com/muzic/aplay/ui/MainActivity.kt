@@ -12,7 +12,7 @@ import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
 import com.muzic.aplay.permissions
 
-class MainActivity : AppCompatActivity(), SetTitle, Navigate {
+class MainActivity : AppCompatActivity(), Navigate {
 
     private var binding: ActivityMainBinding? = null
     private lateinit var navController: NavController
@@ -87,23 +87,13 @@ class MainActivity : AppCompatActivity(), SetTitle, Navigate {
         binding = null
     }
 
-    override fun setTopBarTitle(title: String) {
-        binding?.topAppBar?.title = title
-    }
-
     override fun navigate(fragment: Int, bundle: Bundle) {
         navController.navigate(fragment, bundle)
     }
 }
 
-interface SetTitle {
-    fun setTopBarTitle(title: String)
-}
-
 interface Navigate {
     fun navigate(fragment: Int, bundle: Bundle)
 }
-
-fun FragmentActivity.setTopTitle(title: String) = (this as MainActivity).setTopBarTitle(title)
 
 fun FragmentActivity.navigate(fragment: Int, bundle: Bundle) = (this as MainActivity).navigate(fragment, bundle)

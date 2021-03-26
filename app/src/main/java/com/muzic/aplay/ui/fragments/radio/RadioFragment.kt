@@ -8,12 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.muzic.aplay.databinding.RadioFragmentBinding
-import com.muzic.aplay.ui.setTopTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 
-//todo: постоянно стоздается фрагмент и не переиспользуется модель
 class RadioFragment : Fragment() {
 
     private var radioBinding: RadioFragmentBinding? = null
@@ -30,9 +28,7 @@ class RadioFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = RadioFragmentBinding.inflate(inflater, container, false)
-
         radioBinding = binding
-
         binding.items.apply {
             adapter = RadioListAdapter(layoutInflater) {
                 Timber.i(it.name)
@@ -45,13 +41,6 @@ class RadioFragment : Fragment() {
                 )
             )
         }
-
-        //        radioViewModel.stations.observe(viewLifecycleOwner) {
-//            radioAdapter.submitList(it.toMutableList())
-//        }
-//        radioViewModel.request(itsAdressWWWTopVote)
-        activity?.setTopTitle("A Radio")
-
         return binding.root
     }
 

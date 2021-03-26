@@ -12,7 +12,6 @@ import com.muzic.aplay.R
 import com.muzic.aplay.databinding.AudioListFragmentBinding
 import com.muzic.aplay.ui.fragments.player.FOLDER_INTENT
 import com.muzic.aplay.ui.navigate
-import com.muzic.aplay.ui.setTopTitle
 import com.muzic.aplay.viewmodels.MusicViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -60,7 +59,6 @@ class AudioListFragment : Fragment() {
         }
 
         activity?.let {
-            it.setTopTitle("A player")
             musicViewModel.queryForAllMusic()
         }
 

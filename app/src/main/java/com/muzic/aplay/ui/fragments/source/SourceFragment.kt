@@ -14,7 +14,6 @@ import com.muzic.aplay.R
 import com.muzic.aplay.databinding.YoutubeFragmentBinding
 import com.muzic.aplay.db.YoutubeStream
 import com.muzic.aplay.ui.fragments.audiolist.AudioViewRow
-import com.muzic.aplay.ui.setTopTitle
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -73,8 +72,6 @@ class SourceFragment : Fragment() {
         viewModel.getAllData.observe(viewLifecycleOwner, { listYoutubeStreams ->
             source.set(listYoutubeStreams.map { it })
         })
-
-        activity?.setTopTitle("A Source")
 
         return binding.root
     }
