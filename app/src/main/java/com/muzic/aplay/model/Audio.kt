@@ -2,6 +2,8 @@ package com.muzic.aplay.model
 
 import com.squareup.moshi.JsonClass
 import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @JsonClass(generateAdapter = true)
 data class Audio(
@@ -21,9 +23,12 @@ data class Audio(
 ) {
 
     fun details(): String {
-        val added = Instant.ofEpochSecond(dateAdded.toLong())
-
-        return "${added}${mimeType}::${String.format("%.2f Mb", size?.let { it / 1024 / 1024 })}"
+        return "${formatter.format(Instant.ofEpochSecond(dateAdded.toLong()))}${mimeFormat}${sizeFormat}"
     }
 
+    private val mimeFormat: String get() = mimeType?.let { "::${it.split("/")[1]}" } ?: ""
+    private val sizeFormat: String get() = "::${String.format("%.2f Mb", size?.let { it / 1024 / 1024 })}"
 }
+
+val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yy-MM-dd")
+    .withZone(ZoneId.systemDefault())
