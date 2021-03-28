@@ -29,7 +29,6 @@ class PlayerFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = PlayerListViewBinding.inflate(inflater, container, false)
-
         binding.songs.let {
             it.setup {
                 withDataSource(source)
@@ -47,17 +46,13 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
-
         musicViewModel.audio.observe(viewLifecycleOwner) { list ->
             source.set(list.map { Row(it.title, it.details()) })
         }
-
         arguments?.getString(PLAYER_FOLDER_INTENT)?.let {
             musicViewModel.queryForMusicFromPath(it)
         }
-
         playerBinding = binding
-
         return binding.root
     }
 
@@ -85,17 +80,15 @@ class PlayerFragment : Fragment() {
 
 }
 
-public val PLAYER_FOLDER_INTENT: String get() = "player_folder_intent"
-public val PLAYER_TITLE_INTENT: String get() = "player_title_intent"
-public val PLAYER_SUBTITLE_INTENT: String get() = "player_subtitle_intent"
+val PLAYER_FOLDER_INTENT: String get() = "player_folder_intent"
+val PLAYER_TITLE_INTENT: String get() = "player_title_intent"
+val PLAYER_SUBTITLE_INTENT: String get() = "player_subtitle_intent"
 
 fun Toolbar.makeScrollable() = try {
     val toolbarClass = Toolbar::class.java
-    val titleTextViewField = toolbarClass.getDeclaredField("mTitleTextView")
-    titleTextViewField.isAccessible = true
-    val textView = titleTextViewField.get(this) as TextView
-
-    textView.let {
+    val titleTextViewField = toolbarClass.getDeclaredField("mTitleTextView").apply { this.isAccessible = true }
+    titleTextViewField.get(this).let {
+        it as TextView
         it.isSelected = true
         it.setHorizontallyScrolling(true)
         it.ellipsize = TextUtils.TruncateAt.MARQUEE

@@ -22,13 +22,10 @@ data class Audio(
     val size: Double?,
 ) {
 
-    fun details(): String {
-        return "${formatter.format(Instant.ofEpochSecond(dateAdded.toLong()))}${mimeFormat}${sizeFormat}"
-    }
+    fun details(): String = "${formatter.format(Instant.ofEpochSecond(dateAdded.toLong()))}${mimeFormat}${sizeFormat}"
 
     private val mimeFormat: String get() = mimeType?.let { "::${it.split("/")[1]}" } ?: ""
-    private val sizeFormat: String get() = "::${String.format("%.2f Mb", size?.let { it / 1024 / 1024 })}"
+    private val sizeFormat: String get() = size?.let { "::${String.format("%.2f Mb", it / 1024 / 1024)}" } ?: ""
 }
 
-val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yy-MM-dd")
-    .withZone(ZoneId.systemDefault())
+val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yy-MM-dd").withZone(ZoneId.systemDefault())

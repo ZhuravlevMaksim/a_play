@@ -15,9 +15,9 @@
         app:collapseIcon="@drawable/ic_baseline_arrow_back_24"
         app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
         app:subtitleTextAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        app:subtitleTextColor="@color/mediaListBackground"
         app:titleTextAppearance="@android:style/TextAppearance.Material.Widget.ActionBar.Title"
-        app:titleTextColor="@color/mediaListBackground"
-        app:subtitleTextColor="@color/mediaListBackground" />
+        app:titleTextColor="@color/mediaListBackground" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/songs"

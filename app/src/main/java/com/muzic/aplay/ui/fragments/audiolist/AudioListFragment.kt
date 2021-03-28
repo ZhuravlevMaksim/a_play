@@ -27,43 +27,32 @@ class AudioListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = AudioListFragmentBinding.inflate(inflater, container, false)
-
         audioListBinding = binding
-
         binding.items.let {
             it.setup {
-
                 withDataSource(source)
-
                 withItem<Row, AudioViewRow>(R.layout.audio_list_row) {
                     onBind(::AudioViewRow) { _, item ->
                         title.text = item.title
                         description.text = item.description
                     }
-
                     onClick {
                         onRowClick(item)
                     }
-
                     onLongClick { index ->
                         onRowLongClick(item, it.findViewHolderForAdapterPosition(index)?.itemView)
                     }
-
                 }
-
             }
         }
-
         musicViewModel.audio.observe(viewLifecycleOwner) { list ->
             list.groupBy { it.relativePath }.let { groupBy ->
                 source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs") })
             }
         }
-
         activity?.let {
             musicViewModel.queryForAllMusic()
         }
-
         return binding.root
     }
 
