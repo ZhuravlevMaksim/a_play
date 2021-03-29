@@ -1,6 +1,9 @@
 package com.muzic.aplay.ui.fragments.player
 
+import android.content.ContentUris
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +17,10 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.PlayerListViewBinding
+import com.muzic.aplay.model.Audio
 import com.muzic.aplay.ui.fragments.audiolist.AudioViewRow
-import com.muzic.aplay.ui.fragments.audiolist.Row
 import com.muzic.aplay.viewmodels.MusicViewModel
+import com.muzic.common.PlayerService
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -32,13 +36,15 @@ class PlayerFragment : Fragment() {
         binding.songs.let {
             it.setup {
                 withDataSource(source)
-                withItem<Row, AudioViewRow>(R.layout.audio_list_row) {
+                withItem<Audio, AudioViewRow>(R.layout.audio_list_row) {
                     onBind(::AudioViewRow) { _, item ->
                         title.text = item.title
-                        description.text = item.description
+                        description.text = item.details()
                     }
                     onClick {
-
+                        activity?.startService(Intent(context, PlayerService::class.java).apply {
+                            putExtra("song", ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, item.id!!).toString())
+                        })
                     }
                     onLongClick {
 
@@ -46,9 +52,7 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
-        musicViewModel.audio.observe(viewLifecycleOwner) { list ->
-            source.set(list.map { Row(it.title, it.details()) })
-        }
+        musicViewModel.audio.observe(viewLifecycleOwner) { source.set(it) }
         arguments?.getString(PLAYER_FOLDER_INTENT)?.let {
             musicViewModel.queryForMusicFromPath(it)
         }

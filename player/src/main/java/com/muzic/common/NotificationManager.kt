@@ -66,10 +66,9 @@ class NotificationManager(val playerService: PlayerService, private val sessionT
     }
 }
 
-class DescriptionAdapter(private val controller: MediaControllerCompat) :
-    PlayerNotificationManager.MediaDescriptionAdapter {
+class DescriptionAdapter(private val controller: MediaControllerCompat) : PlayerNotificationManager.MediaDescriptionAdapter {
     override fun getCurrentContentTitle(player: Player): CharSequence {
-        return controller.metadata.description.title.toString()
+        return "controller.metadata.description.title.toString()"
     }
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? {
@@ -77,7 +76,7 @@ class DescriptionAdapter(private val controller: MediaControllerCompat) :
     }
 
     override fun getCurrentContentText(player: Player): CharSequence? {
-        return controller.metadata.description.subtitle.toString()
+        return "controller.metadata.description.subtitle.toString()"
     }
 
     override fun getCurrentLargeIcon(player: Player, callback: PlayerNotificationManager.BitmapCallback): Bitmap? {

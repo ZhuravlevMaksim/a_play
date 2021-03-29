@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:name=".APlayApplication"
@@ -31,37 +31,16 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
 
+                <category android:name="android.intent.category.APP_MUSIC" />
+                <action android:name="android.intent.action.MUSIC_PLAYER" />
+
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 
-        <service android:name=".ui.fragments.podcast.PodcastMediaService">
-            <intent-filter>
-                <action
-                    android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
-
-        <!--            Player          -->
-
-        <!--        <service-->
-        <!--            android:name="com.muzic.common.PlayerService"-->
-        <!--            android:enabled="true"-->
-        <!--            android:exported="true"-->
-        <!--            tools:ignore="ExportedService">-->
-
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.media.browse.MediaBrowserService" />-->
-        <!--            </intent-filter>-->
-        <!--        </service>-->
-
-        <!--                <activity-->
-        <!--                    android:name="com.muzic.common.PlayerActivity"-->
-        <!--                    android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"-->
-        <!--                    android:label="player activity">-->
-        <!--                </activity>-->
+        <service android:name="com.muzic.common.PlayerService" />
 
     </application>
 
