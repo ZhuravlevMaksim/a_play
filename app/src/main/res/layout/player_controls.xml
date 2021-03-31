@@ -1,81 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.MainActivity"
-    tools:showIn="@layout/activity_main">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:focusable="false"
+    android:orientation="vertical"
+    tools:context=".ui.MainActivity">
 
     <LinearLayout
-        android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:orientation="vertical">
+        android:layout_margin="16dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/song_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            app:indicatorColor="?attr/colorPrimary"
-            app:trackCornerRadius="2dp"
-            app:trackThickness="2dp" />
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="@android:dimen/thumbnail_height"
+            android:layout_height="@android:dimen/thumbnail_height"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:padding="4dp">
-
-            <LinearLayout
-                android:id="@+id/playing_song_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingStart="2dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="2dp"
-                android:paddingBottom="2dp">
-
-                <TextView
-                    android:id="@+id/playing_song"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
-                    android:text="@string/app_name"
-                    android:textAlignment="textStart"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/playing_artist"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
-                    android:text="string/versionName"
-                    android:textAlignment="textStart"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    android:textColor="?android:attr/textColorPrimary" />
-            </LinearLayout>
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
 
             <ImageButton
-                android:id="@+id/play_pause_button"
+                android:id="@+id/playback_speed"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?android:attr/actionBarItemBackground"
                 android:padding="8dp"
-                app:srcCompat="@drawable/ic_baseline_play_arrow_24"
-                android:contentDescription="TODO" />
+                app:srcCompat="@drawable/ic_baseline_speed_24" />
 
+            <ImageButton
+                android:id="@+id/save_time"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?android:attr/actionBarItemBackground"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_baseline_bedtime_24" />
         </LinearLayout>
 
     </LinearLayout>
-</merge>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/seek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textColor="?android:attr/textColorSecondary" />
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:progressBackgroundTint="?attr/colorPrimary"
+            android:progressBackgroundTintMode="src_in"
+            android:splitTrack="false" />
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textColor="?android:attr/textColorSecondary" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="4dp"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/artist_album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textColor="?android:attr/textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/skip_prev"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="?android:attr/actionBarItemBackground"
+            android:padding="8dp"
+            app:srcCompat="@drawable/ic_baseline_skip_previous_24" />
+
+        <ImageButton
+            android:id="@+id/play"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?android:attr/actionBarItemBackground"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/ic_baseline_play_arrow_24" />
+
+        <ImageButton
+            android:id="@+id/skip_next"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="?android:attr/actionBarItemBackground"
+            android:padding="8dp"
+            app:srcCompat="@drawable/ic_baseline_skip_next_24" />
+
+        <ImageButton
+            android:id="@+id/repeat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="?android:attr/actionBarItemBackground"
+            android:padding="8dp"
+            app:srcCompat="@drawable/ic_baseline_repeat_one_24" />
+
+    </LinearLayout>
+
+</LinearLayout>

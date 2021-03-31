@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.customview.customView
 import com.muzic.aplay.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
@@ -23,13 +27,13 @@ class MainActivity : AppCompatActivity(), Navigate {
         val permissions = permissions()
 
         if (permissions) {
-            initFragments()
+            init()
         } else {
             setContentView(R.layout.no_permissions)
         }
     }
 
-    private fun initFragments() {
+    private fun init() {
         if (binding == null) {
             binding = ActivityMainBinding.inflate(layoutInflater)
         }
@@ -53,7 +57,21 @@ class MainActivity : AppCompatActivity(), Navigate {
 
             handleIntent(intent)
         }
+
+        binding?.let {
+            with(it.playingSongContainer) {
+                setOnClickListener {
+                    MaterialDialog(this@MainActivity, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        customView(R.layout.player_controls)
+                    }
+                }
+                setOnLongClickListener {
+                    TODO()
+                }
+            }
+        }
     }
+
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -65,7 +83,7 @@ class MainActivity : AppCompatActivity(), Navigate {
         when (requestCode) {
             PERMISSION_REQUEST_READ_EXTERNAL_STORAGE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    initFragments()
+                    init()
                 }
             }
         }
