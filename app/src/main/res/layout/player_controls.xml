@@ -21,6 +21,7 @@
             android:layout_width="@android:dimen/thumbnail_height"
             android:layout_height="@android:dimen/thumbnail_height"
             android:layout_gravity="center_vertical"
+            android:background="@drawable/default_art"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp" />
 
@@ -74,7 +75,10 @@
             android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
-            android:progressBackgroundTint="?attr/colorPrimary"
+            android:thumbTint="@color/colorPrimary"
+            android:progressBackgroundTint="@color/colorPrimary"
+            android:backgroundTint="@color/colorPrimary"
+            android:progressTint="@color/colorPrimary"
             android:progressBackgroundTintMode="src_in"
             android:splitTrack="false" />
 
@@ -112,6 +116,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textAlignment="center"
+            android:text="string/song"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold" />
@@ -128,6 +133,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textAlignment="center"
+            android:text="string/artist_album"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:textColor="?android:attr/textColorSecondary" />
     </LinearLayout>

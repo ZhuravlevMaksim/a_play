@@ -89,8 +89,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:contentDescription="TODO"
                     android:padding="8dp"
+                    android:background="@color/white"
                     app:srcCompat="@drawable/ic_baseline_play_arrow_24" />
 
             </LinearLayout>
