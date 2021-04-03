@@ -3,7 +3,9 @@ package com.muzic.aplay.ui
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -11,9 +13,11 @@ import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.muzic.aplay.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.ActivityMainBinding
+import com.muzic.aplay.databinding.PlayerControlsBinding
 import com.muzic.aplay.permissions
 
 class MainActivity : AppCompatActivity(), Navigate {
@@ -63,6 +67,26 @@ class MainActivity : AppCompatActivity(), Navigate {
                 setOnClickListener {
                     MaterialDialog(this@MainActivity, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                         customView(R.layout.player_controls)
+
+                        val playerControls = PlayerControlsBinding.bind(getCustomView())
+
+                        playerControls.playbackSpeed.setOnClickListener { view ->
+                            PopupMenu(this@MainActivity, view).apply {
+                                inflate(R.menu.popup_speed)
+                                gravity = Gravity.END
+
+                                setOnMenuItemClickListener { menuItem ->
+                                    val speed = when (menuItem.itemId) {
+                                        R.id.speed_1 -> 1.00F
+                                        R.id.speed_1_5 -> 1.5F
+                                        R.id.speed_2 -> 2.0F
+                                        else -> 1.0F
+                                    }
+                                    return@setOnMenuItemClickListener true
+                                }
+                                show()
+                            }
+                        }
                     }
                 }
                 setOnLongClickListener {
