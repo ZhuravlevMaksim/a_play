@@ -1,14 +1,14 @@
 package com.muzic.aplay.ui.fragments.player
 
-import android.content.ContentUris
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.TextUtils
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -16,6 +16,7 @@ import com.afollestad.recyclical.datasource.emptyDataSource
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.R
+import com.muzic.aplay.contentPathFromId
 import com.muzic.aplay.databinding.PlayerListViewBinding
 import com.muzic.aplay.model.Audio
 import com.muzic.aplay.ui.fragments.audiolist.AudioViewRow
@@ -33,8 +34,8 @@ class PlayerFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = PlayerListViewBinding.inflate(inflater, container, false)
-        binding.songs.let {
-            it.setup {
+        binding.songs.let { songs ->
+            songs.setup {
                 withDataSource(source)
                 withItem<Audio, AudioViewRow>(R.layout.audio_list_row) {
                     onBind(::AudioViewRow) { _, item ->
@@ -43,11 +44,22 @@ class PlayerFragment : Fragment() {
                     }
                     onClick {
                         activity?.startService(Intent(context, PlayerService::class.java).apply {
-                            putExtra("song", ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, item.id!!).toString())
+                            putExtra("song", contentPathFromId(item.id!!))
                         })
                     }
-                    onLongClick {
-
+                    onLongClick { index ->
+                        val itemView = songs.findViewHolderForAdapterPosition(index)?.itemView
+                        itemView?.let { view ->
+                            PopupMenu(requireActivity(), view).apply {
+                                inflate(R.menu.popup)
+                                menu.findItem(R.id.popup_title).title = item.title
+                                gravity = Gravity.END
+                                setOnMenuItemClickListener {
+                                    return@setOnMenuItemClickListener true
+                                }
+                                show()
+                            }
+                        }
                     }
                 }
             }
