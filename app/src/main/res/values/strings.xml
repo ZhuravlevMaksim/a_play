@@ -37,4 +37,7 @@
     <string name="duration_format">%d:%02d</string>
     <string name="search">Search</string>
     <string name="delete">Delete</string>
+
+    <string name="notification_channel">Now Playing</string>
+    <string name="notification_channel_description">Shows what music is currently playing</string>
 </resources>

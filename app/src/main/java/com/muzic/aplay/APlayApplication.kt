@@ -17,8 +17,9 @@ class APlayApplication : Application() {
     private val module = module {
         single { OkHttpClient() }
         single { PlayDownloadManager(get(), get()) }
+        single { PlayerService() }
         viewModel { YoutubeViewModel(get(), get()) }
-        viewModel { MusicViewModel(application = this@APlayApplication) }
+        viewModel { MusicViewModel(this@APlayApplication) }
     }
 
     override fun onCreate() {

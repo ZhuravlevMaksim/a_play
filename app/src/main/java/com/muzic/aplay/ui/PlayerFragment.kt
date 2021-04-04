@@ -1,4 +1,4 @@
-package com.muzic.aplay.ui.fragments.player
+package com.muzic.aplay.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,13 +15,12 @@ import androidx.fragment.app.Fragment
 import com.afollestad.recyclical.datasource.emptyDataSource
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
+import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
 import com.muzic.aplay.contentPathFromId
 import com.muzic.aplay.databinding.PlayerListViewBinding
 import com.muzic.aplay.model.Audio
-import com.muzic.aplay.ui.fragments.audiolist.AudioViewRow
 import com.muzic.aplay.viewmodels.MusicViewModel
-import com.muzic.common.PlayerService
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 

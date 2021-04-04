@@ -1,4 +1,4 @@
-package com.muzic.aplay.ui.fragments.audiolist
+package com.muzic.aplay.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,10 +10,6 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.AudioListFragmentBinding
-import com.muzic.aplay.ui.fragments.player.PLAYER_FOLDER_INTENT
-import com.muzic.aplay.ui.fragments.player.PLAYER_SUBTITLE_INTENT
-import com.muzic.aplay.ui.fragments.player.PLAYER_TITLE_INTENT
-import com.muzic.aplay.ui.navigate
 import com.muzic.aplay.viewmodels.MusicViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

@@ -1,4 +1,4 @@
-package com.muzic.aplay.ui.fragments.audiolist
+package com.muzic.aplay.ui
 
 import android.view.View
 import android.widget.TextView

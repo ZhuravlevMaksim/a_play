@@ -1,12 +1,11 @@
-package com.muzic.common
+package com.muzic.aplay
 
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
+import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
-import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -14,7 +13,9 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 
-class PlayerService : MediaBrowserServiceCompat() {
+const val CHANNEL_ID = "a_play_foreground_player_service"
+
+class PlayerService() : Service() {
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var mediaSession: MediaSessionCompat
@@ -24,30 +25,35 @@ class PlayerService : MediaBrowserServiceCompat() {
         ExoPlayerWrapper(this)
     }
 
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
     override fun onCreate() {
         super.onCreate()
 
-        val sessionActivityPendingIntent =
-            packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                PendingIntent.getActivity(this, 0, sessionIntent, 0)
-            }
-
         mediaSession = MediaSessionCompat(this, "PlayerService").apply {
-            setSessionActivity(sessionActivityPendingIntent)
+            setSessionActivity(packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
+                PendingIntent.getActivity(this@PlayerService, 0, sessionIntent, 0)
+            })
             isActive = true
         }
 
-        sessionToken = mediaSession.sessionToken
-        notificationManager = NotificationManager(this, mediaSession.sessionToken)
+        notificationManager = NotificationManager(this)
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         notificationManager.setPlayer(player.player)
+    }
+
+    fun getMediaSessionToken(): MediaSessionCompat.Token {
+        return mediaSession.sessionToken
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.getStringExtra("song")?.let {
             player.play(it)
         }
-        return START_STICKY
+
+        return START_NOT_STICKY
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
@@ -63,20 +69,12 @@ class PlayerService : MediaBrowserServiceCompat() {
         player.destroy()
     }
 
-    override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
-        return BrowserRoot("/", null)
-    }
-
-    override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
-
-    }
-
 }
 
 class ExoPlayerWrapper(val context: Context) {
 
     private val listener = PlayerEventListener()
-    val player =  SimpleExoPlayer.Builder(context).build().apply {
+    val player = SimpleExoPlayer.Builder(context).build().apply {
         setAudioAttributes(AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MUSIC).setUsage(C.USAGE_MEDIA).build(), true)
         setHandleAudioBecomingNoisy(true)
         addListener(listener)

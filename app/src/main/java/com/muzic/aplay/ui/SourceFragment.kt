@@ -1,4 +1,4 @@
-package com.muzic.aplay.ui.fragments.source
+package com.muzic.aplay.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +13,6 @@ import com.afollestad.recyclical.withItem
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.YoutubeFragmentBinding
 import com.muzic.aplay.db.YoutubeStream
-import com.muzic.aplay.ui.fragments.audiolist.AudioViewRow
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

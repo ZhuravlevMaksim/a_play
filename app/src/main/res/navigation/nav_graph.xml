@@ -4,14 +4,14 @@
     app:startDestination="@id/audioListFragment">
     <fragment
         android:id="@+id/audioListFragment"
-        android:name="com.muzic.aplay.ui.fragments.audiolist.AudioListFragment"
+        android:name="com.muzic.aplay.ui.AudioListFragment"
         android:label="AudioListFragment" />
     <fragment
         android:id="@+id/sourceFragment"
-        android:name="com.muzic.aplay.ui.fragments.source.SourceFragment"
+        android:name="com.muzic.aplay.ui.SourceFragment"
         android:label="SourceFragment" />
     <fragment
         android:id="@+id/playerFragment"
-        android:name="com.muzic.aplay.ui.fragments.player.PlayerFragment"
+        android:name="com.muzic.aplay.ui.PlayerFragment"
         android:label="PlayerFragment" />
 </navigation>

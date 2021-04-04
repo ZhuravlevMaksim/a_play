@@ -1,11 +1,10 @@
-package com.muzic.common
+package com.muzic.aplay
 
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.content.ContextCompat
 import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.Player
@@ -15,13 +14,13 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 const val CHANNEL = "aplay.NOW_PLAYING"
 const val NOTIFICATION_ID = 0xb723
 
-class NotificationManager(val playerService: PlayerService, private val sessionToken: MediaSessionCompat.Token) {
+class NotificationManager(val playerService: PlayerService) {
 
     private var isForegroundService = false
     private val notificationManager: PlayerNotificationManager
 
     init {
-        val mediaController = MediaControllerCompat(playerService, sessionToken)
+        val mediaController = MediaControllerCompat(playerService, playerService.getMediaSessionToken())
 
         notificationManager = PlayerNotificationManager.createWithNotificationChannel(
             playerService,
@@ -30,11 +29,10 @@ class NotificationManager(val playerService: PlayerService, private val sessionT
             NOTIFICATION_ID, DescriptionAdapter(mediaController), PlayerNotificationListener()
         ).apply {
 
-            setMediaSessionToken(sessionToken)
+            setMediaSessionToken(playerService.getMediaSessionToken())
             setSmallIcon(R.drawable.ic_notification)
             setUseNavigationActions(true)
             setUseNavigationActionsInCompactView(false)
-
 
             setControlDispatcher(DefaultControlDispatcher(30_000, 10_000))
         }
@@ -75,7 +73,7 @@ class DescriptionAdapter(private val controller: MediaControllerCompat) : Player
         return controller.sessionActivity
     }
 
-    override fun getCurrentContentText(player: Player): CharSequence? {
+    override fun getCurrentContentText(player: Player): CharSequence {
         return "controller.metadata.description.subtitle.toString()"
     }
 
