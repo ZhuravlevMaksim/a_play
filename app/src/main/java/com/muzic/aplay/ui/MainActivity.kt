@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity(), Navigate {
             binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.player_page -> navController.navigate(R.id.audioListFragment)
-//                    R.id.podcast_page -> navController.navigate(R.id.podcastFragment)
-//                    R.id.radio_page -> navController.navigate(R.id.radioFragment)
                     R.id.source_page -> navController.navigate(R.id.sourceFragment)
                 }
                 true

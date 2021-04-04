@@ -1,10 +1,6 @@
 package com.muzic.aplay
 
 import android.app.Application
-import com.muzic.aplay.db.YoutubeStreamDatabase
-import com.muzic.aplay.ui.fragments.podcast.FeedService
-import com.muzic.aplay.ui.fragments.podcast.PodcastRepo
-import com.muzic.aplay.ui.fragments.radio.RadioViewModel
 import com.muzic.aplay.viewmodels.MusicViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient
@@ -21,10 +17,8 @@ class APlayApplication : Application() {
     private val module = module {
         single { OkHttpClient() }
         single { PlayDownloadManager(get(), get()) }
-        single { PodcastRepo(FeedService.instance, YoutubeStreamDatabase.get(androidContext()).podcastDao()) }
         viewModel { YoutubeViewModel(get(), get()) }
         viewModel { MusicViewModel(application = this@APlayApplication) }
-        viewModel { RadioViewModel(get()) }
     }
 
     override fun onCreate() {
