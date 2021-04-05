@@ -30,6 +30,8 @@
     <string name="skip_forward_10s">Skip forward 10s</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 
     <string name="menu_music_queue">Queue</string>
     <string name="album_art_alt">Album art</string>

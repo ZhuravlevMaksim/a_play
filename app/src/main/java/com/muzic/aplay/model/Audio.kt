@@ -1,6 +1,10 @@
 package com.muzic.aplay.model
 
+import android.content.ContentUris
+import android.net.Uri
+import android.provider.MediaStore
 import com.squareup.moshi.JsonClass
+import java.io.Serializable
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -16,11 +20,14 @@ data class Audio(
     val album: String?,
     val albumId: Long?,
     val relativePath: String?,
-    val id: Long?,
+    val id: Long,
     val dateAdded: Int,
     val mimeType: String?,
     val size: Double?,
-) {
+) : Serializable {
+
+    val uri: Uri
+        get() = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
 
     fun details(): String = "${formatter.format(Instant.ofEpochSecond(dateAdded.toLong()))}${mimeFormat}${sizeFormat}"
 

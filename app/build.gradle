@@ -101,8 +101,7 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:3.3.0'
     implementation 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
 
-    implementation "com.google.android.exoplayer:exoplayer-core:2.12.1"
-    implementation "com.google.android.exoplayer:exoplayer-ui:2.12.1"
-    implementation "com.google.android.exoplayer:extension-mediasession:2.12.1"
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.12.1'
+    implementation 'com.google.android.exoplayer:extension-mediasession:2.12.1'
 
 }

@@ -17,7 +17,6 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
-import com.muzic.aplay.contentPathFromId
 import com.muzic.aplay.databinding.PlayerListViewBinding
 import com.muzic.aplay.model.Audio
 import com.muzic.aplay.viewmodels.MusicViewModel
@@ -43,7 +42,7 @@ class PlayerFragment : Fragment() {
                     }
                     onClick {
                         activity?.startService(Intent(context, PlayerService::class.java).apply {
-                            putExtra("song", contentPathFromId(item.id!!))
+                            putExtra("song", item)
                         })
                     }
                     onLongClick { index ->
