@@ -1,6 +1,7 @@
 package com.muzic.aplay
 
 import android.app.Application
+import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.viewmodels.MusicViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient
@@ -17,9 +18,9 @@ class APlayApplication : Application() {
     private val module = module {
         single { OkHttpClient() }
         single { PlayDownloadManager(get(), get()) }
-        single { PlayerService() }
+        single { AudioRepository(this@APlayApplication) }
         viewModel { YoutubeViewModel(get(), get()) }
-        viewModel { MusicViewModel(this@APlayApplication) }
+        viewModel { MusicViewModel(get()) }
     }
 
     override fun onCreate() {

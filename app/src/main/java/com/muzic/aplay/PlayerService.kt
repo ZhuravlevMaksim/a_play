@@ -25,10 +25,12 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.model.Audio
+import org.koin.android.ext.android.inject
 
 
-class PlayerService : Service() {
+class PlayerService() : Service() {
 
     private val NOTIFICATION_ID = 0x723
     private val NOTIFICATION_DEFAULT_CHANNEL_ID = "a_play_notify_channel"
@@ -37,10 +39,9 @@ class PlayerService : Service() {
     private lateinit var audioFocusRequest: AudioFocusRequest
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var audioManager: AudioManager
+    private val audioRepository by inject<AudioRepository>()
 
     private var audioFocusRequested = false
-
-    private var cs: Audio? = null
 
     val metadataBuilder = MediaMetadataCompat.Builder()
 
@@ -54,10 +55,12 @@ class PlayerService : Service() {
     )
 
     override fun onBind(intent: Intent?): IBinder {
-        return object : Binder() {
-            val mediaSessionToken: MediaSessionCompat.Token
-                get() = mediaSession.sessionToken
-        }
+        return PlayerServiceBinder()
+    }
+
+    inner class PlayerServiceBinder : Binder() {
+        val mediaSessionToken: MediaSessionCompat.Token
+            get() = mediaSession.sessionToken
     }
 
     override fun onCreate() {
@@ -117,15 +120,8 @@ class PlayerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.getSerializableExtra("song")?.let {
-            cs = it as Audio
-            exoPlayer.setMediaItem(MediaItem.fromUri(it.uri))
-        }
-
-        exoPlayer.prepare()
-        exoPlayer.play()
-
-        return START_NOT_STICKY
+        MediaButtonReceiver.handleIntent(mediaSession, intent)
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
@@ -147,7 +143,7 @@ class PlayerService : Service() {
         override fun onPlay() {
             if (!exoPlayer.playWhenReady) {
                 startService(Intent(applicationContext, PlayerService::class.java))
-                val audio: Audio = cs!!
+                val audio: Audio = audioRepository.queryForMusic().first()
                 updateMetadata(audio)
                 prepareToPlay(audio.uri)
                 if (!audioFocusRequested) {
@@ -197,15 +193,15 @@ class PlayerService : Service() {
         }
 
         override fun onSkipToNext() {
-            updateMetadata(cs!!)
+            updateMetadata(audioRepository.queryForMusic().first())
             refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(cs!!.uri)
+            prepareToPlay(audioRepository.queryForMusic().first().uri)
         }
 
         override fun onSkipToPrevious() {
-            updateMetadata(cs!!)
+            updateMetadata(audioRepository.queryForMusic().first())
             refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(cs!!.uri)
+            prepareToPlay(audioRepository.queryForMusic().first().uri)
         }
 
         private fun prepareToPlay(uri: Uri) {
