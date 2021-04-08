@@ -30,7 +30,7 @@ import com.muzic.aplay.model.Audio
 import org.koin.android.ext.android.inject
 
 
-class PlayerService() : Service() {
+class PlayerService : Service() {
 
     private val NOTIFICATION_ID = 0x723
     private val NOTIFICATION_DEFAULT_CHANNEL_ID = "a_play_notify_channel"
@@ -115,10 +115,6 @@ class PlayerService() : Service() {
             }
     }
 
-    fun getMediaSessionToken(): MediaSessionCompat.Token {
-        return mediaSession.sessionToken
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         MediaButtonReceiver.handleIntent(mediaSession, intent)
         return super.onStartCommand(intent, flags, startId)
@@ -143,7 +139,7 @@ class PlayerService() : Service() {
         override fun onPlay() {
             if (!exoPlayer.playWhenReady) {
                 startService(Intent(applicationContext, PlayerService::class.java))
-                val audio: Audio = audioRepository.queryForMusic().first()
+                val audio: Audio = audioRepository.currentAudio!!
                 updateMetadata(audio)
                 prepareToPlay(audio.uri)
                 if (!audioFocusRequested) {
@@ -193,20 +189,21 @@ class PlayerService() : Service() {
         }
 
         override fun onSkipToNext() {
-            updateMetadata(audioRepository.queryForMusic().first())
+            updateMetadata(audioRepository.currentAudio!!)
             refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(audioRepository.queryForMusic().first().uri)
+            prepareToPlay(audioRepository.currentAudio!!.uri)
         }
 
         override fun onSkipToPrevious() {
-            updateMetadata(audioRepository.queryForMusic().first())
+            updateMetadata(audioRepository.currentAudio!!)
             refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(audioRepository.queryForMusic().first().uri)
+            prepareToPlay(audioRepository.currentAudio!!.uri)
         }
 
         private fun prepareToPlay(uri: Uri) {
             if (uri != currentUri) {
                 currentUri = uri
+                exoPlayer.addMediaItem(MediaItem.fromUri(uri))
                 exoPlayer.prepare()
             }
         }

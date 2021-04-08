@@ -47,8 +47,8 @@ class MainActivity : AppCompatActivity(), Navigate {
             init()
 
             callback = object : MediaControllerCompat.Callback() {
-                override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
-                    Timber.i(state.state.toString())
+                override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+                    Timber.i(state?.state.toString())
                 }
             }
 
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), Navigate {
                     try {
                         mediaController = MediaControllerCompat(this@MainActivity, playerServiceBinder!!.mediaSessionToken)
                         mediaController?.registerCallback(callback!!)
-//                        callback?.onPlaybackStateChanged(mediaController!!.playbackState)
+                        callback?.onPlaybackStateChanged(mediaController?.playbackState)
                     } catch (e: RemoteException) {
                         mediaController = null
                     }
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity(), Navigate {
 
     private fun handleIntent(intent: Intent?) {
         intent?.let {
-            intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+            it.getStringExtra(Intent.EXTRA_TEXT)?.let {
                 binding!!.bottomNavigation.selectedItemId = R.id.source_page
                 navController.navigate(R.id.sourceFragment, Bundle().apply {
                     this.putString("url", it)

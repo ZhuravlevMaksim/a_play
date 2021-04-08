@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.muzic.aplay.db.AudioRepository
+import com.muzic.aplay.db.PlayingAudio
 import com.muzic.aplay.model.Audio
 
 class MusicViewModel(private val repository: AudioRepository) : ViewModel() {
@@ -14,12 +15,16 @@ class MusicViewModel(private val repository: AudioRepository) : ViewModel() {
 
     val audio: LiveData<List<Audio>> get() = mutAudio
 
-    public fun queryForMusicFromPath(path: String) {
+    fun queryForMusicFromPath(path: String) {
         mutAudio.value = repository.queryForMusic().filter { it.relativePath == path }
     }
 
-    public fun queryForAllMusic() {
+    fun queryForAllMusic() {
         mutAudio.value = repository.queryForMusic()
+    }
+
+    fun setCurrent(audio: Audio){
+        repository.mCurrent.value = PlayingAudio(audio, 0)
     }
 
 }

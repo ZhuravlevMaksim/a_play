@@ -27,7 +27,7 @@ data class Audio(
 ) : Serializable {
 
     val uri: Uri
-        get() = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
+        get() = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, 42)
 
     fun details(): String = "${formatter.format(Instant.ofEpochSecond(dateAdded.toLong()))}${mimeFormat}${sizeFormat}"
 

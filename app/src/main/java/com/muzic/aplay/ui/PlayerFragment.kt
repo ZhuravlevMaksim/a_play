@@ -41,9 +41,8 @@ class PlayerFragment : Fragment() {
                         description.text = item.details()
                     }
                     onClick {
-                        activity?.startService(Intent(context, PlayerService::class.java).apply {
-                            putExtra("song", item)
-                        })
+                        musicViewModel.setCurrent(item)
+                        activity?.startService(Intent(context, PlayerService::class.java))
                     }
                     onLongClick { index ->
                         val itemView = songs.findViewHolderForAdapterPosition(index)?.itemView

@@ -4,9 +4,16 @@ import android.app.Application
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import com.muzic.aplay.model.Audio
 
 class AudioRepository(private val application: Application) {
+
+    val mCurrent: MutableLiveData<PlayingAudio> by lazy {
+        MutableLiveData<PlayingAudio>()
+    }
+
+    val currentAudio: Audio? get() = mCurrent.value?.audio
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun queryForMusic(): List<Audio> {
@@ -89,3 +96,5 @@ class AudioRepository(private val application: Application) {
     }
 
 }
+
+data class PlayingAudio(var audio: Audio, var duration: Long)
