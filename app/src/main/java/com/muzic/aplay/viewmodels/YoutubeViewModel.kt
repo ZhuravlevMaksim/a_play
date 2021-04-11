@@ -3,9 +3,9 @@ package com.muzic.aplay.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.muzic.aplay.PlayDownloadManager
 import com.muzic.aplay.db.YoutubeStream
 import com.muzic.aplay.db.YoutubeStreamDatabase
+import com.muzic.aplay.download.PlayDownloadManager
 import com.ystract.YoutubeStreamExtractor
 import com.ystract.services.AudioStreamInfo
 import kotlinx.coroutines.Dispatchers

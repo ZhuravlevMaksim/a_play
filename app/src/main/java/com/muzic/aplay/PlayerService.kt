@@ -251,6 +251,10 @@ class PlayerService : Service() {
             }
         }
 
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+//            updateUiForPlayingMediaItem(mediaItem)
+        }
+
         override fun onPlayerError(error: ExoPlaybackException) {}
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
     }

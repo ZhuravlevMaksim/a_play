@@ -2,6 +2,7 @@ package com.muzic.aplay
 
 import android.app.Application
 import com.muzic.aplay.db.AudioRepository
+import com.muzic.aplay.download.PlayDownloadManager
 import com.muzic.aplay.viewmodels.MusicViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient

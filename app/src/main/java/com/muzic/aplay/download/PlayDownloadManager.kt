@@ -1,4 +1,4 @@
-package com.muzic.aplay
+package com.muzic.aplay.download
 
 import android.annotation.TargetApi
 import android.app.DownloadManager
