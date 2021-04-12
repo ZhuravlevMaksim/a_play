@@ -53,9 +53,13 @@ class MainActivity : AppCompatActivity(), Navigate {
                 override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
                     Timber.i(state?.state.toString())
                     when (state?.state) {
+                        PlaybackStateCompat.STATE_NONE,
+                        PlaybackStateCompat.STATE_STOPPED,
                         PlaybackStateCompat.STATE_PAUSED -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_pause_24)
-                        PlaybackStateCompat.STATE_STOPPED -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_pause_24)
-                        PlaybackStateCompat.STATE_PLAYING -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_play_arrow_24)
+                        PlaybackStateCompat.STATE_PLAYING -> binding?.playPauseButton?.setImage(
+                            this@MainActivity,
+                            R.drawable.ic_baseline_play_arrow_24
+                        )
                     }
                 }
             }
@@ -83,12 +87,10 @@ class MainActivity : AppCompatActivity(), Navigate {
 
             binding?.playPauseButton?.setOnClickListener {
                 when (mediaController?.playbackState?.state) {
-                    PlaybackStateCompat.STATE_NONE -> mediaController?.transportControls?.play()
-                    PlaybackStateCompat.STATE_STOPPED -> mediaController?.transportControls?.play()
+                    PlaybackStateCompat.STATE_NONE,
+                    PlaybackStateCompat.STATE_STOPPED,
                     PlaybackStateCompat.STATE_PAUSED -> mediaController?.transportControls?.play()
-                    PlaybackStateCompat.STATE_PLAYING -> {
-                        mediaController?.transportControls?.pause()
-                    }
+                    PlaybackStateCompat.STATE_PLAYING -> mediaController?.transportControls?.pause()
                     else -> mediaController?.transportControls?.play()
                 }
             }

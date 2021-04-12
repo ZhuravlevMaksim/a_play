@@ -212,8 +212,6 @@ class PlayerService : Service() {
         private fun updateMetadata(music: Audio) {
 //        metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, )
             metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.title)
-            metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.album)
-            metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.artist)
             metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.duration)
             mediaSession.setMetadata(metadataBuilder.build())
         }
