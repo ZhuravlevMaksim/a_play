@@ -16,11 +16,11 @@ class MusicViewModel(private val repository: AudioRepository) : ViewModel() {
     val audio: LiveData<List<Audio>> get() = mutAudio
 
     fun queryForMusicFromPath(path: String) {
-        mutAudio.value = repository.queryForMusic().filter { it.relativePath == path }
+        mutAudio.value = repository.audios.filter { it.relativePath == path }
     }
 
     fun queryForAllMusic() {
-        mutAudio.value = repository.queryForMusic()
+        mutAudio.value = repository.audios
     }
 
     fun setCurrent(audio: Audio){

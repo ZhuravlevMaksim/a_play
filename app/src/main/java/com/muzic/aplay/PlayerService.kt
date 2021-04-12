@@ -11,7 +11,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioFocusRequest
 import android.media.AudioManager
-import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
@@ -134,15 +133,16 @@ class PlayerService : Service() {
     }
 
     private val mediaSessionCallback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
-        private var currentUri: Uri? = null
         var currentState = PlaybackStateCompat.STATE_STOPPED
         override fun onPlay() {
             if (!exoPlayer.playWhenReady) {
                 startService(Intent(applicationContext, PlayerService::class.java))
-                if (audioRepository.currentAudio == null) return
-                val audio: Audio = audioRepository.currentAudio!!
+                val audio: Audio = audioRepository.currentAudio.value?.audio ?: return
                 updateMetadata(audio)
-                prepareToPlay(audio.uri)
+                exoPlayer.addMediaItems(audioRepository.audios.map { MediaItem.fromUri(it.uri) }.toMutableList() )
+                exoPlayer.seekToDefaultPosition(audio.position)
+                exoPlayer.prepare()
+
                 if (!audioFocusRequested) {
                     audioFocusRequested = true
                     val audioFocusResult: Int = audioManager.requestAudioFocus(audioFocusRequest)
@@ -190,23 +190,11 @@ class PlayerService : Service() {
         }
 
         override fun onSkipToNext() {
-            updateMetadata(audioRepository.currentAudio!!)
-            refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(audioRepository.currentAudio!!.uri)
+            exoPlayer.previous()
         }
 
         override fun onSkipToPrevious() {
-            updateMetadata(audioRepository.currentAudio!!)
-            refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(audioRepository.currentAudio!!.uri)
-        }
-
-        private fun prepareToPlay(uri: Uri) {
-            if (uri != currentUri) {
-                currentUri = uri
-                exoPlayer.addMediaItem(MediaItem.fromUri(uri))
-                exoPlayer.prepare()
-            }
+            exoPlayer.next()
         }
 
         private fun updateMetadata(music: Audio) {

@@ -19,6 +19,7 @@ data class Audio(
     val dateAdded: Int,
     val mimeType: String?,
     val size: Double?,
+    val position: Int,
     val store: Uri
 ) : Serializable {
 

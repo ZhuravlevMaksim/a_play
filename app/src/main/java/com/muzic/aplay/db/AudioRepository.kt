@@ -4,19 +4,24 @@ import android.app.Application
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.muzic.aplay.model.Audio
 
 class AudioRepository(private val application: Application) {
 
+    private val mAudios = MutableLiveData(queryForMusic())
+
+    val audios: List<Audio> get() = mAudios.value ?: mutableListOf()
+
     val mCurrent: MutableLiveData<PlayingAudio> by lazy {
         MutableLiveData<PlayingAudio>()
     }
 
-    val currentAudio: Audio? get() = mCurrent.value?.audio
+    val currentAudio: LiveData<PlayingAudio?> get() = mCurrent
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun queryForMusic(): List<Audio> {
+    private fun queryForMusic(): List<Audio> {
         val projection = arrayOf(
             MediaStore.Audio.AudioColumns.YEAR,
             MediaStore.Audio.AudioColumns.TITLE,
@@ -30,6 +35,7 @@ class AudioRepository(private val application: Application) {
         )
 
         val list = mutableListOf<Audio>()
+        var position = 0
 
         listOf(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).forEach {
             application.contentResolver.query(it, projection, null, null, null)?.use { cursor ->
@@ -67,6 +73,7 @@ class AudioRepository(private val application: Application) {
                             audioDateAdded,
                             mimeType,
                             size,
+                            position++,
                             it
                         )
                     )
