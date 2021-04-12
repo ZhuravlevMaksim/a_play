@@ -16,7 +16,10 @@ import timber.log.Timber
 class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context: Context) : ViewModel() {
 
     private val dao = YoutubeStreamDatabase.get(context).youtubeDao()
-    public val getAllData = dao.getAllData()
+    val getAllData = dao.getAllData()
+
+    private val listUidRegex by lazy { Regex("list=(.+)\$") }
+    private val videoUidRegex by lazy { Regex("watch\\?v=(.+)&|watch\\?v=(.+)\$") }
 
     fun getStreamFromUrl(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -43,7 +46,7 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
         )
     )
 
-    public fun download(stream: YoutubeStream) {
+    fun download(stream: YoutubeStream) {
         viewModelScope.launch(Dispatchers.IO) {
             downloadManager.downloadWithAndroidManager(stream)
         }
@@ -51,12 +54,12 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
 
     private fun extractUid(url: String): Pair<TYPE, String?> {
         if (url.contains("list")) {
-            return Pair(TYPE.PLAYLIST, Regex("list=(.+)\$").find(url)?.destructured?.component1())
+            return Pair(TYPE.PLAYLIST, listUidRegex.find(url)?.destructured?.component1())
         }
         if (url.contains("https://youtu.be/")) {
             return Pair(TYPE.VIDEO, url.replace("https://youtu.be/", ""))
         }
-        return Pair(TYPE.VIDEO, Regex("watch\\?v=(.+)&|watch\\?v=(.+)\$").find(url)?.destructured?.component1())
+        return Pair(TYPE.VIDEO, videoUidRegex.find(url)?.destructured?.component1())
     }
 
     fun remove(youtubeStream: YoutubeStream?) {

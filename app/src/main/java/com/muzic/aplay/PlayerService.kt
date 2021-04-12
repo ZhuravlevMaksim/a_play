@@ -139,6 +139,7 @@ class PlayerService : Service() {
         override fun onPlay() {
             if (!exoPlayer.playWhenReady) {
                 startService(Intent(applicationContext, PlayerService::class.java))
+                if (audioRepository.currentAudio == null) return
                 val audio: Audio = audioRepository.currentAudio!!
                 updateMetadata(audio)
                 prepareToPlay(audio.uri)

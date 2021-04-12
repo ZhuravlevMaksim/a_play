@@ -1,6 +1,7 @@
 package com.muzic.aplay.ui
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
@@ -10,8 +11,10 @@ import android.os.RemoteException
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.Gravity
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -49,6 +52,11 @@ class MainActivity : AppCompatActivity(), Navigate {
             callback = object : MediaControllerCompat.Callback() {
                 override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
                     Timber.i(state?.state.toString())
+                    when (state?.state) {
+                        PlaybackStateCompat.STATE_PAUSED -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_pause_24)
+                        PlaybackStateCompat.STATE_STOPPED -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_pause_24)
+                        PlaybackStateCompat.STATE_PLAYING -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_play_arrow_24)
+                    }
                 }
             }
 
@@ -74,8 +82,15 @@ class MainActivity : AppCompatActivity(), Navigate {
             bindService(Intent(this, PlayerService::class.java), serviceConnection!!, BIND_AUTO_CREATE)
 
             binding?.playPauseButton?.setOnClickListener {
-                Timber.i("play")
-                mediaController?.transportControls?.play()
+                when (mediaController?.playbackState?.state) {
+                    PlaybackStateCompat.STATE_NONE -> mediaController?.transportControls?.play()
+                    PlaybackStateCompat.STATE_STOPPED -> mediaController?.transportControls?.play()
+                    PlaybackStateCompat.STATE_PAUSED -> mediaController?.transportControls?.play()
+                    PlaybackStateCompat.STATE_PLAYING -> {
+                        mediaController?.transportControls?.pause()
+                    }
+                    else -> mediaController?.transportControls?.play()
+                }
             }
         } else {
             setContentView(R.layout.no_permissions)
@@ -182,3 +197,5 @@ interface Navigate {
 }
 
 fun FragmentActivity.navigate(fragment: Int, bundle: Bundle) = (this as MainActivity).navigate(fragment, bundle)
+
+fun ImageButton.setImage(context: Context, icon: Int) = setImageDrawable(ContextCompat.getDrawable(context, icon))
