@@ -55,10 +55,10 @@ class MainActivity : AppCompatActivity(), Navigate {
                     when (state?.state) {
                         PlaybackStateCompat.STATE_NONE,
                         PlaybackStateCompat.STATE_STOPPED,
-                        PlaybackStateCompat.STATE_PAUSED -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_pause_24)
+                        PlaybackStateCompat.STATE_PAUSED -> binding?.playPauseButton?.setImage(this@MainActivity, R.drawable.ic_baseline_play_arrow_24)
                         PlaybackStateCompat.STATE_PLAYING -> binding?.playPauseButton?.setImage(
                             this@MainActivity,
-                            R.drawable.ic_baseline_play_arrow_24
+                            R.drawable.ic_baseline_pause_24
                         )
                     }
                 }

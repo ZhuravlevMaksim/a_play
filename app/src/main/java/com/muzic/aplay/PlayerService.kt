@@ -137,9 +137,9 @@ class PlayerService : Service() {
         override fun onPlay() {
             if (!exoPlayer.playWhenReady) {
                 startService(Intent(applicationContext, PlayerService::class.java))
-                val audio: Audio = audioRepository.currentAudio.value?.audio ?: return
+                val audio: Audio = audioRepository.currentAudio.value ?: return
                 updateMetadata(audio)
-                exoPlayer.addMediaItems(audioRepository.audios.map { MediaItem.fromUri(it.uri) }.toMutableList() )
+                exoPlayer.addMediaItems(audioRepository.audios.map { MediaItem.fromUri(it.uri) }.toMutableList())
                 exoPlayer.seekToDefaultPosition(audio.position)
                 exoPlayer.prepare()
 
@@ -191,10 +191,12 @@ class PlayerService : Service() {
 
         override fun onSkipToNext() {
             exoPlayer.previous()
+            audioRepository.setCurrentPrevious()
         }
 
         override fun onSkipToPrevious() {
             exoPlayer.next()
+            audioRepository.setCurrentNext()
         }
 
         private fun updateMetadata(music: Audio) {
@@ -239,7 +241,9 @@ class PlayerService : Service() {
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-//            updateUiForPlayingMediaItem(mediaItem)
+            if (reason == 1) { // next
+                audioRepository.setCurrentIndex(exoPlayer.currentWindowIndex)
+            }
         }
 
         override fun onPlayerError(error: ExoPlaybackException) {}

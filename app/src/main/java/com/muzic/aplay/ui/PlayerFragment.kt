@@ -12,8 +12,9 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.afollestad.recyclical.datasource.emptyDataSource
+import com.afollestad.recyclical.datasource.emptySelectableDataSource
 import com.afollestad.recyclical.setup
+import com.afollestad.recyclical.viewholder.*
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
@@ -27,8 +28,8 @@ class PlayerFragment : Fragment() {
 
     private var playerBinding: PlayerListViewBinding? = null
     private val musicViewModel: MusicViewModel by viewModel()
-
-    private val source = emptyDataSource()
+    private val source = emptySelectableDataSource()
+    private var selected: Audio? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = PlayerListViewBinding.inflate(inflater, container, false)
@@ -39,6 +40,11 @@ class PlayerFragment : Fragment() {
                     onBind(::AudioViewRow) { _, item ->
                         title.text = item.title
                         description.text = item.details()
+                        if (isSelected()) {
+                            this.itemView.setBackgroundColor(resources.getColor(R.color.nowPlayingBackground))
+                        } else {
+                            this.itemView.setBackgroundColor(resources.getColor(R.color.white))
+                        }
                     }
                     onClick {
                         musicViewModel.setCurrent(item)
@@ -61,7 +67,12 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
-        musicViewModel.audio.observe(viewLifecycleOwner) { source.set(it) }
+        musicViewModel.audios.observe(viewLifecycleOwner) { source.set(it) }
+        musicViewModel.current.observe(viewLifecycleOwner) {
+            source.select(it)
+            selected?.let { prev -> if (prev != it) source.deselect(prev) }
+            selected = it
+        }
         arguments?.getString(PLAYER_FOLDER_INTENT)?.let {
             musicViewModel.queryForMusicFromPath(it)
         }

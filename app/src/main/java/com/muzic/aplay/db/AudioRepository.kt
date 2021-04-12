@@ -14,11 +14,11 @@ class AudioRepository(private val application: Application) {
 
     val audios: List<Audio> get() = mAudios.value ?: mutableListOf()
 
-    val mCurrent: MutableLiveData<PlayingAudio> by lazy {
-        MutableLiveData<PlayingAudio>()
+    val mCurrent: MutableLiveData<Audio> by lazy {
+        MutableLiveData<Audio>()
     }
 
-    val currentAudio: LiveData<PlayingAudio?> get() = mCurrent
+    val currentAudio: LiveData<Audio?> get() = mCurrent
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun queryForMusic(): List<Audio> {
@@ -84,6 +84,16 @@ class AudioRepository(private val application: Application) {
         return list
     }
 
-}
+    fun setCurrentNext() {
+        mCurrent.value = mCurrent.value?.position?.let { mAudios.value?.getOrNull(it + 1) }
+    }
 
-data class PlayingAudio(var audio: Audio, var duration: Long)
+    fun setCurrentPrevious() {
+        mCurrent.value = mCurrent.value?.position?.let { mAudios.value?.getOrNull(it - 1) }
+    }
+
+    fun setCurrentIndex(currentWindowIndex: Int) {
+        mCurrent.value = mCurrent.value?.position?.let { mAudios.value?.getOrNull(currentWindowIndex) }
+    }
+
+}

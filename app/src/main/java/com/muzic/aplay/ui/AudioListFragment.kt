@@ -41,7 +41,7 @@ class AudioListFragment : Fragment() {
                 }
             }
         }
-        musicViewModel.audio.observe(viewLifecycleOwner) { list ->
+        musicViewModel.audios.observe(viewLifecycleOwner) { list ->
             list.groupBy { it.relativePath }.let { groupBy ->
                 source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs") })
             }

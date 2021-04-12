@@ -25,8 +25,7 @@
 
     <color name="mediaControlColor">#CD8C8C8C</color>
 
-    <color name="nowPlayingBackground">#eff0f0</color>
-    <color name="nowPlayingWhiteBackground">#fdfdfd</color>
+    <color name="nowPlayingBackground">#D7D7D7</color>
 
     <color name="white">#ffffff</color>
 </resources>
