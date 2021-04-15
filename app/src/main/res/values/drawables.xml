@@ -5,4 +5,7 @@
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
+
+    <drawable name="exo_notification_fastforward">@drawable/ic_baseline_forward_30_24</drawable>
+    <drawable name="exo_notification_rewind">@drawable/ic_baseline_replay_10_24</drawable>
 </resources>

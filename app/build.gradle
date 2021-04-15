@@ -87,8 +87,8 @@ dependencies {
 
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
 
     implementation "androidx.room:room-runtime:2.2.6"
     kapt "androidx.room:room-compiler:2.2.6"
@@ -101,7 +101,8 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:3.3.0'
     implementation 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
 
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.12.1'
-    implementation 'com.google.android.exoplayer:extension-mediasession:2.12.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.13.3'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.3'
+    implementation 'com.google.android.exoplayer:extension-mediasession:2.13.3'
 
 }

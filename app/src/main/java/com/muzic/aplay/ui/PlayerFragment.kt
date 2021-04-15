@@ -1,6 +1,5 @@
 package com.muzic.aplay.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Gravity
@@ -16,7 +15,6 @@ import com.afollestad.recyclical.datasource.emptySelectableDataSource
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.viewholder.*
 import com.afollestad.recyclical.withItem
-import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.PlayerListViewBinding
 import com.muzic.aplay.model.Audio
@@ -48,7 +46,6 @@ class PlayerFragment : Fragment() {
                     }
                     onClick {
                         musicViewModel.setCurrent(item)
-                        activity?.startService(Intent(context, PlayerService::class.java))
                     }
                     onLongClick { index ->
                         val itemView = songs.findViewHolderForAdapterPosition(index)?.itemView
