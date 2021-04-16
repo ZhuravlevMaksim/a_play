@@ -8,17 +8,16 @@ import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Binder
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.media.session.MediaButtonReceiver
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.Player.EVENT_MEDIA_ITEM_TRANSITION
+import com.google.android.exoplayer2.Player.EVENT_TRACKS_CHANGED
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.muzic.aplay.db.AudioRepository
 import org.koin.android.ext.android.inject
@@ -34,11 +33,6 @@ class PlayerService : LifecycleService() {
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var notificationManager: PlayerNotificationManager
     private val audioRepository by inject<AudioRepository>()
-
-    inner class PlayerServiceBinder : Binder() {
-        val mediaSessionToken: MediaSessionCompat.Token
-            get() = mediaSession.sessionToken
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -61,11 +55,11 @@ class PlayerService : LifecycleService() {
             NOTIFICATION_ID,
             object : PlayerNotificationManager.MediaDescriptionAdapter {
                 override fun getCurrentContentTitle(player: Player): CharSequence {
-                    return audioRepository.current.value?.title ?: ""
+                    return audioRepository.currentPlaying.value?.title ?: ""
                 }
 
                 override fun getCurrentContentText(player: Player): CharSequence {
-                    return audioRepository.current.value?.details() ?: ""
+                    return audioRepository.currentPlaying.value?.details() ?: ""
                 }
 
                 override fun createCurrentContentIntent(player: Player): PendingIntent? {
@@ -105,7 +99,7 @@ class PlayerService : LifecycleService() {
         audioRepository.pathAudios.observe(this) { list ->
             exoPlayer.addMediaItems(list.map { MediaItem.fromUri(it.uri) }.toMutableList())
         }
-        audioRepository.current.observe(this, {
+        audioRepository.uiSelected.observe(this, {
             it?.let {
                 exoPlayer.seekTo(it.position, 0)
                 exoPlayer.prepare()
@@ -130,8 +124,6 @@ class PlayerService : LifecycleService() {
 
     private val exoPlayerListener: Player.EventListener = object : Player.EventListener {
         var prevWindowIndex: Int? = null
-        override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {}
-        override fun onLoadingChanged(isLoading: Boolean) {}
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             when (playbackState) {
                 Player.STATE_BUFFERING,
@@ -141,23 +133,16 @@ class PlayerService : LifecycleService() {
                         stopForeground(false)
                     }
                 }
+                Player.STATE_ENDED -> audioRepository.setCurrentPlaying(null)
                 else -> notificationManager.setPlayer(null)
             }
         }
 
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-
-        }
-
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            if (prevWindowIndex != exoPlayer.currentWindowIndex) {
+            if (mediaItem != null && prevWindowIndex != exoPlayer.currentWindowIndex && (EVENT_MEDIA_ITEM_TRANSITION == reason || EVENT_TRACKS_CHANGED == reason)) {
                 prevWindowIndex = exoPlayer.currentWindowIndex
-                audioRepository.setCurrentIndex(exoPlayer.currentWindowIndex)
+                audioRepository.setCurrentPlaying(exoPlayer.currentWindowIndex)
             }
         }
-
-        override fun onPlayerError(error: ExoPlaybackException) {}
-        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
-
     }
 }

@@ -67,16 +67,12 @@ class PlayerFragment : Fragment() {
             }
         }
         audioRepository.audios.observe(viewLifecycleOwner) { source.set(it) }
-        audioRepository.current.observe(viewLifecycleOwner) {
-            it?.let {
-                source.select(it)
-                prev?.let { prev -> if (prev != it) source.deselect(prev) }
-                prev = it
-            }
+        audioRepository.currentPlaying.observe(viewLifecycleOwner) {
+            it?.let { source.select(it) }
+            prev?.let { prev -> if (prev != it) source.deselect(prev) }
+            prev = it
         }
-        arguments?.getString(PLAYER_FOLDER_INTENT)?.let {
-            audioRepository.setCurrentPath(it)
-        }
+        arguments?.getString(PLAYER_FOLDER_INTENT)?.let { audioRepository.setCurrentPath(it) }
         playerBinding = binding
         return binding.root
     }

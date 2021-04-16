@@ -13,22 +13,30 @@ class AudioRepository(private val application: Application) {
     private val mAudios = MutableLiveData(queryForMusic())
     val audios: LiveData<List<Audio>> get() = mAudios
 
-    private val mCurrent: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
-    val current: LiveData<Audio?> get() = mCurrent
+    private val mCurrentPlaying: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
+    val currentPlaying: LiveData<Audio?> get() = mCurrentPlaying
+
+    private val mUiSelected: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
+    val uiSelected: LiveData<Audio?> get() = mUiSelected
 
     private val currentPathAudios: MutableLiveData<List<Audio>> by lazy { MutableLiveData<List<Audio>>() }
     val pathAudios: LiveData<List<Audio>> get() = currentPathAudios
-
-    fun setCurrentIndex(currentWindowIndex: Int) {
-        mCurrent.value = mAudios.value?.getOrNull(currentWindowIndex)
-    }
 
     fun setCurrentPath(path: String) {
         currentPathAudios.value = audios.value?.filter { it.relativePath == path }
     }
 
     fun setCurrent(audio: Audio) {
-        mCurrent.value = audio
+        if (mUiSelected.value != audio){
+            mUiSelected.value = audio
+        }
+    }
+
+    fun setCurrentPlaying(index: Int?) {
+        val audio = if (index != null) mAudios.value?.getOrNull(index) else null
+        if (mCurrentPlaying.value != audio){
+            mCurrentPlaying.value = audio
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
