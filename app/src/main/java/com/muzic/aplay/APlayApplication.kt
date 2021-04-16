@@ -3,7 +3,6 @@ package com.muzic.aplay
 import android.app.Application
 import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.download.PlayDownloadManager
-import com.muzic.aplay.viewmodels.MusicViewModel
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -21,7 +20,6 @@ class APlayApplication : Application() {
         single { PlayDownloadManager(get(), get()) }
         single { AudioRepository(this@APlayApplication) }
         viewModel { YoutubeViewModel(get(), get()) }
-        viewModel { MusicViewModel(get()) }
     }
 
     override fun onCreate() {

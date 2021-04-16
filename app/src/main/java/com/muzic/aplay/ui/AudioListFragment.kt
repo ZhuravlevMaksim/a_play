@@ -1,76 +1,126 @@
 package com.muzic.aplay.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.afollestad.recyclical.datasource.emptyDataSource
+import com.afollestad.recyclical.datasource.emptySelectableDataSource
 import com.afollestad.recyclical.setup
+import com.afollestad.recyclical.viewholder.*
 import com.afollestad.recyclical.withItem
+import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
-import com.muzic.aplay.databinding.AudioListFragmentBinding
-import com.muzic.aplay.viewmodels.MusicViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.muzic.aplay.databinding.PlayerListViewBinding
+import com.muzic.aplay.db.AudioRepository
+import com.muzic.aplay.model.Audio
+import org.koin.android.ext.android.inject
 
 
-class AudioListFragment : Fragment() {
+class PlayerFragment : Fragment() {
 
-    private var audioListBinding: AudioListFragmentBinding? = null
-    private val musicViewModel: MusicViewModel by viewModel()
-
-    private val source = emptyDataSource()
+    private var playerBinding: PlayerListViewBinding? = null
+    private val audioRepository: AudioRepository by inject()
+    private val source = emptySelectableDataSource()
+    private var prev: Audio? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = AudioListFragmentBinding.inflate(inflater, container, false)
-        audioListBinding = binding
-        binding.items.let {
-            it.setup {
+        val binding = PlayerListViewBinding.inflate(inflater, container, false)
+        binding.songs.let { songs ->
+            songs.setup {
                 withDataSource(source)
-                withItem<Row, AudioViewRow>(R.layout.audio_list_row) {
+                withItem<Audio, AudioViewRow>(R.layout.audio_list_row) {
                     onBind(::AudioViewRow) { _, item ->
                         title.text = item.title
-                        description.text = item.description
+                        description.text = item.details()
+                        if (isSelected()) {
+                            this.itemView.setBackgroundColor(resources.getColor(R.color.nowPlayingBackground))
+                        } else {
+                            this.itemView.setBackgroundColor(resources.getColor(R.color.white))
+                        }
                     }
                     onClick {
-                        onRowClick(item)
+                        audioRepository.setCurrent(item)
                     }
                     onLongClick { index ->
-                        onRowLongClick(item, it.findViewHolderForAdapterPosition(index)?.itemView)
+                        val itemView = songs.findViewHolderForAdapterPosition(index)?.itemView
+                        itemView?.let { view ->
+                            PopupMenu(requireActivity(), view).apply {
+                                inflate(R.menu.popup)
+                                menu.findItem(R.id.popup_title).title = item.title
+                                gravity = Gravity.END
+                                setOnMenuItemClickListener {
+                                    return@setOnMenuItemClickListener true
+                                }
+                                show()
+                            }
+                        }
                     }
                 }
             }
         }
-        musicViewModel.audios.observe(viewLifecycleOwner) { list ->
-            list.groupBy { it.relativePath }.let { groupBy ->
-                source.set(groupBy.keys.map { Row(it, "${groupBy[it]?.size} Songs") })
+        audioRepository.audios.observe(viewLifecycleOwner) { source.set(it) }
+        audioRepository.current.observe(viewLifecycleOwner) {
+            it?.let {
+                source.select(it)
+                prev?.let { prev -> if (prev != it) source.deselect(prev) }
+                prev = it
             }
         }
-        activity?.let {
-            musicViewModel.queryForAllMusic()
+        arguments?.getString(PLAYER_FOLDER_INTENT)?.let {
+            audioRepository.setCurrentPath(it)
         }
+        playerBinding = binding
         return binding.root
     }
 
-    private fun onRowClick(item: Row) {
-        activity?.let {
-            it.navigate(R.id.playerFragment, Bundle().apply {
-                this.putString(PLAYER_FOLDER_INTENT, item.title)
-                this.putString(PLAYER_TITLE_INTENT, item.title)
-                this.putString(PLAYER_SUBTITLE_INTENT, item.description)
-            })
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupToolbar()
+        activity?.startService(Intent(activity, PlayerService::class.java))
+    }
+
+    private fun setupToolbar() {
+        playerBinding?.detailsToolbar?.run {
+            overflowIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_baseline_more_vert_24)
+            title = arguments?.getString(PLAYER_TITLE_INTENT, "")
+            subtitle = arguments?.getString(PLAYER_SUBTITLE_INTENT, "")
+            this.makeScrollable()
+            setNavigationOnClickListener {
+                requireActivity().onBackPressed()
+            }
         }
     }
 
-    private fun onRowLongClick(item: Row, itemView: View?) {
-        TODO("Not yet imlemented")
-    }
-
     override fun onDestroyView() {
+        playerBinding = null
         super.onDestroyView()
-        audioListBinding = null
     }
 
 }
 
-data class Row(val title: String?, val description: String?)
+val PLAYER_FOLDER_INTENT: String get() = "player_folder_intent"
+val PLAYER_TITLE_INTENT: String get() = "player_title_intent"
+val PLAYER_SUBTITLE_INTENT: String get() = "player_subtitle_intent"
+
+fun Toolbar.makeScrollable() = try {
+    val toolbarClass = Toolbar::class.java
+    val titleTextViewField = toolbarClass.getDeclaredField("mTitleTextView").apply { this.isAccessible = true }
+    titleTextViewField.get(this).let {
+        it as TextView
+        it.isSelected = true
+        it.setHorizontallyScrolling(true)
+        it.ellipsize = TextUtils.TruncateAt.MARQUEE
+        it.marqueeRepeatLimit = -1
+    }
+} catch (e: Exception) {
+    e.printStackTrace()
+    null
+}

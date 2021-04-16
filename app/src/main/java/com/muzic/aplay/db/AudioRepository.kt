@@ -11,14 +11,25 @@ import com.muzic.aplay.model.Audio
 class AudioRepository(private val application: Application) {
 
     private val mAudios = MutableLiveData(queryForMusic())
+    val audios: LiveData<List<Audio>> get() = mAudios
 
-    val audios: List<Audio> get() = mAudios.value ?: mutableListOf()
+    private val mCurrent: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
+    val current: LiveData<Audio?> get() = mCurrent
 
-    val mCurrent: MutableLiveData<Audio> by lazy {
-        MutableLiveData<Audio>()
+    private val currentPathAudios: MutableLiveData<List<Audio>> by lazy { MutableLiveData<List<Audio>>() }
+    val pathAudios: LiveData<List<Audio>> get() = currentPathAudios
+
+    fun setCurrentIndex(currentWindowIndex: Int) {
+        mCurrent.value = mAudios.value?.getOrNull(currentWindowIndex)
     }
 
-    val currentAudio: LiveData<Audio?> get() = mCurrent
+    fun setCurrentPath(path: String) {
+        currentPathAudios.value = audios.value?.filter { it.relativePath == path }
+    }
+
+    fun setCurrent(audio: Audio) {
+        mCurrent.value = audio
+    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun queryForMusic(): List<Audio> {
@@ -82,18 +93,6 @@ class AudioRepository(private val application: Application) {
         }
 
         return list
-    }
-
-    fun setCurrentNext() {
-        mCurrent.value = mCurrent.value?.position?.let { mAudios.value?.getOrNull(it + 1) }
-    }
-
-    fun setCurrentPrevious() {
-        mCurrent.value = mCurrent.value?.position?.let { mAudios.value?.getOrNull(it - 1) }
-    }
-
-    fun setCurrentIndex(currentWindowIndex: Int) {
-        mCurrent.value = mCurrent.value?.position?.let { mAudios.value?.getOrNull(currentWindowIndex) }
     }
 
 }
