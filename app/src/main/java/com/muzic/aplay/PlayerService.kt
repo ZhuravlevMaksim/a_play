@@ -13,8 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.media.session.MediaButtonReceiver
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.Player.EVENT_MEDIA_ITEM_TRANSITION
-import com.google.android.exoplayer2.Player.EVENT_TRACKS_CHANGED
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -99,13 +97,14 @@ class PlayerService : LifecycleService() {
         audioRepository.pathAudios.observe(this) { list ->
             exoPlayer.addMediaItems(list.map { MediaItem.fromUri(it.uri) }.toMutableList())
         }
-        audioRepository.uiSelected.observe(this, {
-            it?.let {
-                exoPlayer.seekTo(it.position, 0)
-                exoPlayer.prepare()
-                exoPlayer.play()
-            }
-        })
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val position = intent?.getIntExtra("position", 0) ?: 0
+        exoPlayer.seekTo(position, 0)
+        exoPlayer.prepare()
+        exoPlayer.play()
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
@@ -139,7 +138,7 @@ class PlayerService : LifecycleService() {
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            if (mediaItem != null && prevWindowIndex != exoPlayer.currentWindowIndex && (EVENT_MEDIA_ITEM_TRANSITION == reason || EVENT_TRACKS_CHANGED == reason)) {
+            if (mediaItem != null && prevWindowIndex != exoPlayer.currentWindowIndex) {
                 prevWindowIndex = exoPlayer.currentWindowIndex
                 audioRepository.setCurrentPlaying(exoPlayer.currentWindowIndex)
             }

@@ -47,7 +47,7 @@ class PlayerFragment : Fragment() {
                         }
                     }
                     onClick {
-                        audioRepository.setCurrent(item)
+                        activity?.startService(Intent(activity, PlayerService::class.java).apply { putExtra("position", item.position) })
                     }
                     onLongClick { index ->
                         val itemView = songs.findViewHolderForAdapterPosition(index)?.itemView
@@ -80,7 +80,6 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupToolbar()
-        activity?.startService(Intent(activity, PlayerService::class.java))
     }
 
     private fun setupToolbar() {

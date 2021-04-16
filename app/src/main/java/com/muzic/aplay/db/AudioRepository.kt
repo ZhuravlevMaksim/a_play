@@ -16,20 +16,11 @@ class AudioRepository(private val application: Application) {
     private val mCurrentPlaying: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
     val currentPlaying: LiveData<Audio?> get() = mCurrentPlaying
 
-    private val mUiSelected: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
-    val uiSelected: LiveData<Audio?> get() = mUiSelected
-
     private val currentPathAudios: MutableLiveData<List<Audio>> by lazy { MutableLiveData<List<Audio>>() }
     val pathAudios: LiveData<List<Audio>> get() = currentPathAudios
 
     fun setCurrentPath(path: String) {
         currentPathAudios.value = audios.value?.filter { it.relativePath == path }
-    }
-
-    fun setCurrent(audio: Audio) {
-        if (mUiSelected.value != audio){
-            mUiSelected.value = audio
-        }
     }
 
     fun setCurrentPlaying(index: Int?) {
