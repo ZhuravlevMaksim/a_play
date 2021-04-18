@@ -12,6 +12,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
@@ -97,6 +98,7 @@ class PlayerFragment : Fragment() {
                 binder = service as PlayerService.PlayerServiceBinder
                 mediaController = MediaControllerCompat(context, binder!!.mediaSessionToken)
             }
+
             override fun onServiceDisconnected(name: ComponentName) {
                 binder = null
             }
@@ -131,7 +133,7 @@ class PlayerFragment : Fragment() {
     private fun show() {
         activity?.let { activity ->
             val executor = Executors.newSingleThreadScheduledExecutor()
-             MaterialDialog(activity, BottomSheet(LayoutMode.WRAP_CONTENT))
+            MaterialDialog(activity, BottomSheet(LayoutMode.WRAP_CONTENT))
                 .show {
                     customView(R.layout.player_controls)
                     val playerControls = PlayerControlsBinding.bind(getCustomView())
@@ -142,13 +144,27 @@ class PlayerFragment : Fragment() {
                     val scheduleAtFixedRate = executor.scheduleAtFixedRate({
                         val duration = mediaController?.metadata?.getLong("android.media.metadata.DURATION")
                         val position = mediaController?.playbackState?.position ?: 0
-                        duration?.let {
-                            playerControls.seekBar.progress = (100.0 / duration * position).toInt()
+                        playerControls.seekBar.max = duration?.toInt() ?: 100
+                            duration?.let {
+                            playerControls.seekBar.progress = position.toInt()
                         }
                     }, 0, 1, TimeUnit.SECONDS)
                     setOnDismissListener {
                         scheduleAtFixedRate.cancel(true)
                     }
+                    playerControls.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                            if (fromUser) {
+                                mediaController?.transportControls?.seekTo(progress.toLong())
+                            }
+                        }
+                        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+                        }
+                        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+                        }
+                    })
                     playerControls.playbackSpeed.setOnClickListener { view ->
                         PopupMenu(activity, view).apply {
                             inflate(R.menu.popup_speed)
