@@ -4,13 +4,15 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
+import android.app.Service
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Binder
+import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleService
 import androidx.media.session.MediaButtonReceiver
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -19,9 +21,11 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.muzic.aplay.db.AudioRepository
 import org.koin.android.ext.android.inject
+import java.util.*
+import java.util.concurrent.*
 
 
-class PlayerService : LifecycleService() {
+class PlayerService : Service() {
 
     private val NOTIFICATION_ID = 0x723
     private val NOTIFICATION_DEFAULT_CHANNEL_ID = "a_play_notify_channel"
@@ -31,6 +35,15 @@ class PlayerService : LifecycleService() {
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var notificationManager: PlayerNotificationManager
     private val audioRepository by inject<AudioRepository>()
+
+    inner class PlayerServiceBinder : Binder() {
+        val mediaSessionToken: MediaSessionCompat.Token
+            get() = mediaSession.sessionToken
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        return PlayerServiceBinder()
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -42,11 +55,11 @@ class PlayerService : LifecycleService() {
         exoPlayer = SimpleExoPlayer.Builder(this)
             .setTrackSelector(DefaultTrackSelector(this))
             .setAudioAttributes(AudioAttributes.DEFAULT, true)
+            .setHandleAudioBecomingNoisy(true)
             .setLoadControl(DefaultLoadControl()).build()
             .apply {
                 this.addListener(exoPlayerListener)
             }
-
         notificationManager = PlayerNotificationManager(
             this,
             NOTIFICATION_DEFAULT_CHANNEL_ID,
@@ -94,13 +107,13 @@ class PlayerService : LifecycleService() {
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlayer(exoPlayer)
 
-        audioRepository.pathAudios.observe(this) { list ->
+        audioRepository.currentPathAudios.value?.let { list ->
             exoPlayer.addMediaItems(list.map { MediaItem.fromUri(it.uri) }.toMutableList())
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val position = intent?.getIntExtra("position", 0) ?: 0
+        val position = intent!!.getIntExtra("position", 0)
         exoPlayer.seekTo(position, 0)
         exoPlayer.prepare()
         exoPlayer.play()

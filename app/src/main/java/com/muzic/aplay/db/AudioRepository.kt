@@ -4,29 +4,23 @@ import android.app.Application
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.muzic.aplay.model.Audio
 
 class AudioRepository(private val application: Application) {
 
-    private val mAudios = MutableLiveData(queryForMusic())
-    val audios: LiveData<List<Audio>> get() = mAudios
-
-    private val mCurrentPlaying: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
-    val currentPlaying: LiveData<Audio?> get() = mCurrentPlaying
-
-    private val currentPathAudios: MutableLiveData<List<Audio>> by lazy { MutableLiveData<List<Audio>>() }
-    val pathAudios: LiveData<List<Audio>> get() = currentPathAudios
+    val audios = MutableLiveData(queryForMusic())
+    val currentPlaying: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
+    val currentPathAudios: MutableLiveData<List<Audio>> by lazy { MutableLiveData<List<Audio>>() }
 
     fun setCurrentPath(path: String) {
         currentPathAudios.value = audios.value?.filter { it.relativePath == path }
     }
 
     fun setCurrentPlaying(index: Int?) {
-        val audio = if (index != null) mAudios.value?.getOrNull(index) else null
-        if (mCurrentPlaying.value != audio){
-            mCurrentPlaying.value = audio
+        val audio = if (index != null) audios.value?.getOrNull(index) else null
+        if (currentPlaying.value != audio) {
+            currentPlaying.value = audio
         }
     }
 
@@ -83,7 +77,6 @@ class AudioRepository(private val application: Application) {
                             audioDateAdded,
                             mimeType,
                             size,
-                            position++,
                             it
                         )
                     )
