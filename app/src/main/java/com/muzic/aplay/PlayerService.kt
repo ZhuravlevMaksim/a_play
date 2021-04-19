@@ -15,6 +15,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -151,6 +152,11 @@ class PlayerService : Service() {
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            if (MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED == reason) {
+                prevWindowIndex = null
+                audioRepository.setCurrentPlaying(null)
+                return
+            }
             if (mediaItem != null && prevWindowIndex != exoPlayer.currentWindowIndex) {
                 prevWindowIndex = exoPlayer.currentWindowIndex
                 audioRepository.setCurrentPlaying(exoPlayer.currentWindowIndex)

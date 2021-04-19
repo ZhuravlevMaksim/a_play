@@ -98,7 +98,6 @@ class PlayerFragment : Fragment() {
                 binder = service as PlayerService.PlayerServiceBinder
                 mediaController = MediaControllerCompat(context, binder!!.mediaSessionToken)
             }
-
             override fun onServiceDisconnected(name: ComponentName) {
                 binder = null
             }
@@ -140,11 +139,12 @@ class PlayerFragment : Fragment() {
                     audioRepository.currentPlaying.observe(viewLifecycleOwner) {
                         playerControls.song.text = it?.title ?: ""
                         playerControls.details.text = it?.details() ?: ""
+                        playerControls.seekBar.max = it?.duration?.toInt() ?: 100
+                        playerControls.seekBar.progress = 0
                     }
                     val scheduleAtFixedRate = executor.scheduleAtFixedRate({
                         val duration = mediaController?.metadata?.getLong("android.media.metadata.DURATION")
                         val position = mediaController?.playbackState?.position ?: 0
-                        playerControls.seekBar.max = duration?.toInt() ?: 100
                             duration?.let {
                             playerControls.seekBar.progress = position.toInt()
                         }

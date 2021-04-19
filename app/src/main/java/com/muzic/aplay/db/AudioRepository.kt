@@ -39,7 +39,6 @@ class AudioRepository(private val application: Application) {
         )
 
         val list = mutableListOf<Audio>()
-        var position = 0
 
         listOf(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).forEach {
             application.contentResolver.query(it, projection, null, null, null)?.use { cursor ->
