@@ -6,6 +6,7 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.muzic.aplay.model.Audio
+import com.muzic.aplay.model.From
 
 class AudioRepository(private val application: Application) {
 
@@ -13,8 +14,8 @@ class AudioRepository(private val application: Application) {
     val currentPlaying: MutableLiveData<Audio?> by lazy { MutableLiveData<Audio?>() }
     val currentPathAudios: MutableLiveData<List<Audio>> by lazy { MutableLiveData<List<Audio>>() }
 
-    fun setCurrentPath(path: String) {
-        currentPathAudios.value = audios.value?.filter { it.relativePath == path }
+    fun setPlaylist(playlist: List<Audio>) {
+        currentPathAudios.value = playlist
     }
 
     fun setCurrentPlaying(index: Int?) {
@@ -27,9 +28,7 @@ class AudioRepository(private val application: Application) {
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun queryForMusic(): List<Audio> {
         val projection = arrayOf(
-            MediaStore.Audio.AudioColumns.YEAR,
             MediaStore.Audio.AudioColumns.TITLE,
-            MediaStore.Audio.AudioColumns.DISPLAY_NAME,
             MediaStore.Audio.AudioColumns.DURATION,
             MediaStore.Audio.AudioColumns.BUCKET_DISPLAY_NAME,
             MediaStore.Audio.AudioColumns._ID,
@@ -42,9 +41,7 @@ class AudioRepository(private val application: Application) {
 
         listOf(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).forEach {
             application.contentResolver.query(it, projection, null, null, null)?.use { cursor ->
-                val yearIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.YEAR)
                 val titleIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
-                val displayNameIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DISPLAY_NAME)
                 val durationIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
                 val relativePathIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.BUCKET_DISPLAY_NAME)
                 val idIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID)
@@ -55,28 +52,25 @@ class AudioRepository(private val application: Application) {
                 while (cursor.moveToNext()) {
 
                     val audioId = cursor.getLong(idIndex)
-                    val audioYear = cursor.getInt(yearIndex)
                     val audioTitle = cursor.getString(titleIndex)
-                    val audioDisplayName = cursor.getString(displayNameIndex)
                     val audioDuration = cursor.getLong(durationIndex)
                     val audioRelativePath = cursor.getString(relativePathIndex)
-                    val audioDateAdded = cursor.getInt(dateAddedIndex)
+                    val audioDateAdded = cursor.getLong(dateAddedIndex)
                     val audioFolderName = audioRelativePath ?: "/"
                     val mimeType = cursor.getString(mimeTypeIndex)
                     val size = cursor.getDouble(sizeIndex)
 
                     list.add(
                         Audio(
-                            audioYear,
                             audioTitle,
-                            audioDisplayName,
                             audioDuration,
                             audioFolderName,
                             audioId,
                             audioDateAdded,
                             mimeType,
                             size,
-                            it
+                            it,
+                            From.LOCAL
                         )
                     )
                 }

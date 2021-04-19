@@ -35,7 +35,7 @@ class PlayerService : Service() {
     private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var notificationManager: PlayerNotificationManager
-    private val audioRepository by inject<AudioRepository>()
+    private val audioRepository: AudioRepository by inject()
 
     inner class PlayerServiceBinder : Binder() {
         val mediaSessionToken: MediaSessionCompat.Token

@@ -1,6 +1,7 @@
 package com.muzic.aplay.viewmodels
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muzic.aplay.db.YoutubeStream
@@ -20,6 +21,8 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
 
     private val listUidRegex by lazy { Regex("list=(.+)\$") }
     private val videoUidRegex by lazy { Regex("watch\\?v=(.+)&|watch\\?v=(.+)\$") }
+
+    val streamValidation: MutableLiveData<YoutubeStream> by lazy { MutableLiveData<YoutubeStream>() }
 
     fun getStreamFromUrl(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -67,6 +70,12 @@ class YoutubeViewModel(private val downloadManager: PlayDownloadManager, context
             viewModelScope.launch(Dispatchers.IO) {
                 dao.delete(it)
             }
+        }
+    }
+
+    fun validateUrl(stream: YoutubeStream) {
+        viewModelScope.launch(Dispatchers.IO) {
+            streamValidation.postValue(downloadManager.validateUrl(stream))
         }
     }
 

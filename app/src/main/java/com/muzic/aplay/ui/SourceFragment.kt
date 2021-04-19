@@ -1,5 +1,7 @@
 package com.muzic.aplay.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +12,15 @@ import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.swipe.SwipeLocation
 import com.afollestad.recyclical.swipe.withSwipeAction
 import com.afollestad.recyclical.withItem
+import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
 import com.muzic.aplay.databinding.YoutubeFragmentBinding
+import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.db.YoutubeStream
+import com.muzic.aplay.model.Audio
+import com.muzic.aplay.model.From
 import com.muzic.aplay.viewmodels.YoutubeViewModel
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -21,6 +28,7 @@ class SourceFragment : Fragment() {
 
     private var sourceBinding: YoutubeFragmentBinding? = null
     private val viewModel: YoutubeViewModel by viewModel()
+    private val audioRepository: AudioRepository by inject()
 
     private val source = emptyDataSource()
 
@@ -55,11 +63,10 @@ class SourceFragment : Fragment() {
                     }
 
                     onClick {
-                        viewModel.download(item)
+                        viewModel.validateUrl(item)
                     }
-
                     onLongClick {
-
+                        viewModel.download(item)
                     }
 
                 }
@@ -70,6 +77,25 @@ class SourceFragment : Fragment() {
 
         viewModel.getAllData.observe(viewLifecycleOwner, { listYoutubeStreams ->
             source.set(listYoutubeStreams.map { it })
+        })
+
+        viewModel.streamValidation.observe(viewLifecycleOwner, { validatedStream ->
+            audioRepository.setPlaylist(
+                listOf(
+                    Audio(
+                        validatedStream.title,
+                        1000,
+                        null,
+                        0,
+                        validatedStream.update,
+                        validatedStream.mimeType,
+                        validatedStream.contentLength.toDouble(),
+                        Uri.parse(validatedStream.url),
+                        From.WEB
+                    )
+                )
+            )
+            activity?.startService(Intent(activity, PlayerService::class.java).apply { putExtra("position", 0) })
         })
 
         return binding.root

@@ -89,8 +89,15 @@ class PlayDownloadManager(private val context: Context, private val client: OkHt
         }
     }
 
+    fun validateUrl(stream: YoutubeStream): YoutubeStream {
+        if (!checkStreamLinkNotExpired(stream)) {
+            stream.url = YoutubeStreamExtractor.streamFromVideo(stream.uid, true)!!.audioStream.url!!
+        }
+        return stream
+    }
+
     private fun checkStreamLinkNotExpired(stream: YoutubeStream): Boolean {
-        if (stream.url != null){
+        if (stream.url != null) {
             client.newCall(
                 Request.Builder()
                     .url(stream.url!!)

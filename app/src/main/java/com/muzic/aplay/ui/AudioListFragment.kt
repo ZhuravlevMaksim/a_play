@@ -88,7 +88,10 @@ class PlayerFragment : Fragment() {
             prev?.let { prev -> if (prev != it) source.deselect(prev) }
             prev = it
         }
-        arguments?.getString(PLAYER_FOLDER_INTENT)?.let { audioRepository.setCurrentPath(it) }
+        arguments?.getString(PLAYER_FOLDER_INTENT)?.let { folder ->
+            val playlist = audioRepository.audios.value?.filter { (folder == it.relativePath) } ?: emptyList()
+            audioRepository.setPlaylist(playlist)
+        }
         playerListBinding = binding
 
 
@@ -98,6 +101,7 @@ class PlayerFragment : Fragment() {
                 binder = service as PlayerService.PlayerServiceBinder
                 mediaController = MediaControllerCompat(context, binder!!.mediaSessionToken)
             }
+
             override fun onServiceDisconnected(name: ComponentName) {
                 binder = null
             }
@@ -145,7 +149,7 @@ class PlayerFragment : Fragment() {
                     val scheduleAtFixedRate = executor.scheduleAtFixedRate({
                         val duration = mediaController?.metadata?.getLong("android.media.metadata.DURATION")
                         val position = mediaController?.playbackState?.position ?: 0
-                            duration?.let {
+                        duration?.let {
                             playerControls.seekBar.progress = position.toInt()
                         }
                     }, 0, 1, TimeUnit.SECONDS)
@@ -158,9 +162,11 @@ class PlayerFragment : Fragment() {
                                 mediaController?.transportControls?.seekTo(progress.toLong())
                             }
                         }
+
                         override fun onStartTrackingTouch(seekBar: SeekBar?) {
 
                         }
+
                         override fun onStopTrackingTouch(seekBar: SeekBar?) {
 
                         }
