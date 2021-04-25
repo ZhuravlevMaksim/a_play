@@ -76,7 +76,7 @@ class SourceFragment : Fragment() {
         }
 
         viewModel.getAllData.observe(viewLifecycleOwner, { listYoutubeStreams ->
-            source.set(listYoutubeStreams.map { it })
+            source.set(listYoutubeStreams.reversed().map { it })
         })
 
         viewModel.streamValidation.observe(viewLifecycleOwner, { validatedStream ->
@@ -84,7 +84,7 @@ class SourceFragment : Fragment() {
                 listOf(
                     Audio(
                         validatedStream.title,
-                        1000,
+                        0,
                         null,
                         0,
                         validatedStream.update,

@@ -107,13 +107,13 @@ class PlayerService : Service() {
 
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlayer(exoPlayer)
-
-        audioRepository.currentPathAudios.value?.let { list ->
-            exoPlayer.addMediaItems(list.map { MediaItem.fromUri(it.uri) }.toMutableList())
-        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        audioRepository.currentPathAudios.value?.let { list ->
+            exoPlayer.setMediaItems(list.map { MediaItem.fromUri(it.uri) }.toMutableList())
+        }
+
         val position = intent!!.getIntExtra("position", 0)
         exoPlayer.seekTo(position, 0)
         exoPlayer.prepare()
@@ -142,6 +142,7 @@ class PlayerService : Service() {
                 Player.STATE_BUFFERING,
                 Player.STATE_READY -> {
                     notificationManager.setPlayer(exoPlayer)
+                    audioRepository.setCurrentPlaying(exoPlayer.currentWindowIndex)
                     if (!playWhenReady) {
                         stopForeground(false)
                     }
@@ -159,7 +160,7 @@ class PlayerService : Service() {
             }
             if (mediaItem != null && prevWindowIndex != exoPlayer.currentWindowIndex) {
                 prevWindowIndex = exoPlayer.currentWindowIndex
-                audioRepository.setCurrentPlaying(exoPlayer.currentWindowIndex)
+//                audioRepository.setCurrentPlaying(exoPlayer.currentWindowIndex)
             }
         }
     }
