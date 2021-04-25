@@ -3,6 +3,7 @@ package com.muzic.aplay
 import android.app.Application
 import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.download.PlayDownloadManager
+import com.muzic.aplay.ui.PlayerDetailsUi
 import com.muzic.aplay.viewmodels.YoutubeViewModel
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -16,6 +17,7 @@ import timber.log.Timber.DebugTree
 class APlayApplication : Application() {
 
     private val module = module {
+        single { PlayerDetailsUi(get()) }
         single { OkHttpClient() }
         single { PlayDownloadManager(get(), get()) }
         single { AudioRepository(this@APlayApplication) }

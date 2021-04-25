@@ -19,7 +19,7 @@ class AudioRepository(private val application: Application) {
     }
 
     fun setCurrentPlaying(index: Int?) {
-        val audio = if (index != null) audios.value?.getOrNull(index) else null
+        val audio = if (index != null) currentPathAudios.value?.getOrNull(index) else null
         if (currentPlaying.value != audio) {
             currentPlaying.value = audio
         }

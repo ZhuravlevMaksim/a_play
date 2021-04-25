@@ -29,6 +29,7 @@ class SourceFragment : Fragment() {
     private var sourceBinding: YoutubeFragmentBinding? = null
     private val viewModel: YoutubeViewModel by viewModel()
     private val audioRepository: AudioRepository by inject()
+    private val playerDetailsUi: PlayerDetailsUi by inject()
 
     private val source = emptyDataSource()
 
@@ -96,6 +97,7 @@ class SourceFragment : Fragment() {
                 )
             )
             activity?.startService(Intent(activity, PlayerService::class.java).apply { putExtra("position", 0) })
+            playerDetailsUi.show(this@SourceFragment)
         })
 
         return binding.root

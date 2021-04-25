@@ -1,49 +1,35 @@
 package com.muzic.aplay.ui
 
-import android.content.ComponentName
-import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
-import android.support.v4.media.session.MediaControllerCompat
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.afollestad.materialdialogs.LayoutMode
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.customview.customView
-import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.recyclical.datasource.emptySelectableDataSource
 import com.afollestad.recyclical.setup
 import com.afollestad.recyclical.viewholder.*
 import com.afollestad.recyclical.withItem
 import com.muzic.aplay.PlayerService
 import com.muzic.aplay.R
-import com.muzic.aplay.databinding.PlayerControlsBinding
 import com.muzic.aplay.databinding.PlayerListViewBinding
 import com.muzic.aplay.db.AudioRepository
 import com.muzic.aplay.model.Audio
 import org.koin.android.ext.android.inject
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 
 class PlayerFragment : Fragment() {
 
     private var playerListBinding: PlayerListViewBinding? = null
     private val audioRepository: AudioRepository by inject()
+    private val playerDetailsUi: PlayerDetailsUi by inject()
     private val source = emptySelectableDataSource()
-    private var mediaController: MediaControllerCompat? = null
     private var prev: Audio? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -63,7 +49,7 @@ class PlayerFragment : Fragment() {
                     }
                     onClick { position ->
                         activity?.startService(Intent(activity, PlayerService::class.java).apply { putExtra("position", position) })
-                        show()
+                        playerDetailsUi.show(this@PlayerFragment)
                     }
                     onLongClick { index ->
                         val itemView = songs.findViewHolderForAdapterPosition(index)?.itemView
@@ -95,17 +81,7 @@ class PlayerFragment : Fragment() {
         playerListBinding = binding
 
 
-        activity?.bindService(Intent(context, PlayerService::class.java), object : ServiceConnection {
-            var binder: PlayerService.PlayerServiceBinder? = null
-            override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                binder = service as PlayerService.PlayerServiceBinder
-                mediaController = MediaControllerCompat(context, binder!!.mediaSessionToken)
-            }
 
-            override fun onServiceDisconnected(name: ComponentName) {
-                binder = null
-            }
-        }, BIND_AUTO_CREATE)
 
 
         return binding.root
@@ -131,64 +107,6 @@ class PlayerFragment : Fragment() {
     override fun onDestroyView() {
         playerListBinding = null
         super.onDestroyView()
-    }
-
-    private fun show() {
-        activity?.let { activity ->
-            val executor = Executors.newSingleThreadScheduledExecutor()
-            MaterialDialog(activity, BottomSheet(LayoutMode.WRAP_CONTENT))
-                .show {
-                    customView(R.layout.player_controls)
-                    val playerControls = PlayerControlsBinding.bind(getCustomView())
-                    audioRepository.currentPlaying.observe(viewLifecycleOwner) {
-                        playerControls.song.text = it?.title ?: ""
-                        playerControls.details.text = it?.details() ?: ""
-                        playerControls.seekBar.max = it?.duration?.toInt() ?: 100
-                        playerControls.seekBar.progress = 0
-                    }
-                    val scheduleAtFixedRate = executor.scheduleAtFixedRate({
-                        val duration = mediaController?.metadata?.getLong("android.media.metadata.DURATION")
-                        val position = mediaController?.playbackState?.position ?: 0
-                        duration?.let {
-                            playerControls.seekBar.progress = position.toInt()
-                        }
-                    }, 0, 1, TimeUnit.SECONDS)
-                    setOnDismissListener {
-                        scheduleAtFixedRate.cancel(true)
-                    }
-                    playerControls.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                            if (fromUser) {
-                                mediaController?.transportControls?.seekTo(progress.toLong())
-                            }
-                        }
-
-                        override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-                        }
-
-                        override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-                        }
-                    })
-                    playerControls.playbackSpeed.setOnClickListener { view ->
-                        PopupMenu(activity, view).apply {
-                            inflate(R.menu.popup_speed)
-                            gravity = Gravity.END
-                            setOnMenuItemClickListener { menuItem ->
-                                val speed = when (menuItem.itemId) {
-                                    R.id.speed_1 -> 1.00F
-                                    R.id.speed_1_5 -> 1.5F
-                                    R.id.speed_2 -> 2.0F
-                                    else -> 1.0F
-                                }
-                                return@setOnMenuItemClickListener true
-                            }
-                            show()
-                        }
-                    }
-                }
-        }
     }
 
 }
