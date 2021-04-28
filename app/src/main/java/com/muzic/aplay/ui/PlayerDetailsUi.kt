@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.view.Gravity
 import android.widget.SeekBar
 import android.widget.Toast
@@ -21,21 +22,25 @@ import com.muzic.aplay.R
 import com.muzic.aplay.databinding.PlayerControlsBinding
 import com.muzic.aplay.db.AudioRepository
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 class PlayerDetailsUi(private val audioRepository: AudioRepository) {
 
     private var mediaController: MediaControllerCompat? = null
+    private var controls: PlayerControlsBinding? = null
+    private var sleepTask: ScheduledFuture<*>? = null
     private val executor by lazy { Executors.newSingleThreadScheduledExecutor() }
+    private var repeat: Boolean = false
 
     fun show(fragment: Fragment?) {
         fragment?.let {
             bind(fragment)
-            val executor = Executors.newSingleThreadScheduledExecutor()
             MaterialDialog(fragment.requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT))
                 .show {
                     customView(R.layout.player_controls)
                     val playerControls = PlayerControlsBinding.bind(getCustomView())
+                    controls = playerControls
                     audioRepository.currentPlaying.observe(fragment.viewLifecycleOwner) {
                         playerControls.song.text = it?.title ?: ""
                         playerControls.details.text = it?.details() ?: ""
@@ -87,10 +92,35 @@ class PlayerDetailsUi(private val audioRepository: AudioRepository) {
                             show()
                         }
                     }
-
                     playerControls.sleepTime.setOnClickListener {
                         Toast.makeText(context, "set sleep in 10 minutes", Toast.LENGTH_SHORT).show()
-                        executor.schedule({ mediaController?.transportControls?.pause() }, 10, TimeUnit.MINUTES)
+                        if (sleepTask == null || sleepTask?.isCancelled != false || sleepTask?.isDone != false) {
+                            sleepTask = executor.schedule({
+                                mediaController?.transportControls?.pause()
+                            }, 10, TimeUnit.MINUTES)
+                        }
+                    }
+                    playerControls.skipPrev.setOnClickListener {
+                        mediaController?.transportControls?.skipToPrevious()
+                    }
+                    playerControls.skipNext.setOnClickListener {
+                        mediaController?.transportControls?.skipToNext()
+                    }
+                    playerControls.play.setOnClickListener {
+                        if (mediaController?.playbackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+                            mediaController?.transportControls?.pause()
+                        } else {
+                            mediaController?.transportControls?.play()
+                        }
+                    }
+                    playerControls.repeat.setOnClickListener {
+                        if (repeat) {
+                            repeat = false
+                            mediaController?.transportControls?.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE)
+                        } else {
+                            repeat = true
+                            mediaController?.transportControls?.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
+                        }
                     }
                 }
         }
@@ -102,6 +132,22 @@ class PlayerDetailsUi(private val audioRepository: AudioRepository) {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 binder = service as PlayerService.PlayerServiceBinder
                 mediaController = MediaControllerCompat(fragment.context, binder!!.mediaSessionToken)
+                mediaController!!.registerCallback(object : MediaControllerCompat.Callback() {
+                    override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+                        when (state?.state) {
+                            PlaybackStateCompat.STATE_NONE,
+                            PlaybackStateCompat.STATE_STOPPED,
+                            PlaybackStateCompat.STATE_PAUSED -> controls?.play?.setImage(
+                                fragment.requireContext(),
+                                R.drawable.ic_baseline_play_arrow_24
+                            )
+                            PlaybackStateCompat.STATE_PLAYING -> controls?.play?.setImage(
+                                fragment.requireContext(),
+                                R.drawable.ic_baseline_pause_24
+                            )
+                        }
+                    }
+                })
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
