@@ -76,11 +76,12 @@ class PlayerDetailsUi(private val audioRepository: AudioRepository) {
                             gravity = Gravity.END
                             setOnMenuItemClickListener { menuItem ->
                                 val speed = when (menuItem.itemId) {
-                                    R.id.speed_1 -> 1.00F
-                                    R.id.speed_1_5 -> 1.5F
-                                    R.id.speed_2 -> 2.0F
-                                    else -> 1.0F
+                                    R.id.speed_1 -> 1f
+                                    R.id.speed_1_5 -> 1.5f
+                                    R.id.speed_2 -> 2f
+                                    else -> 1f
                                 }
+                                mediaController?.transportControls?.setPlaybackSpeed(speed)
                                 return@setOnMenuItemClickListener true
                             }
                             show()

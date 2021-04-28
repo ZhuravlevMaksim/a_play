@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.google.android.exoplayer2.*
@@ -106,6 +107,16 @@ class PlayerService : Service() {
         notificationManager.setPlayer(exoPlayer)
 
         mediaSessionConnector = MediaSessionConnector(mediaSession)
+        mediaSessionConnector.setEnabledPlaybackActions(
+            PlaybackStateCompat.ACTION_PLAY_PAUSE
+                    or PlaybackStateCompat.ACTION_PLAY
+                    or PlaybackStateCompat.ACTION_PAUSE
+                    or PlaybackStateCompat.ACTION_SEEK_TO
+                    or PlaybackStateCompat.ACTION_FAST_FORWARD
+                    or PlaybackStateCompat.ACTION_REWIND
+                    or PlaybackStateCompat.ACTION_STOP
+                    or MediaSessionConnector.ACTION_SET_PLAYBACK_SPEED
+        )
         mediaSessionConnector.setPlayer(exoPlayer)
     }
 
@@ -137,6 +148,11 @@ class PlayerService : Service() {
 
     private val exoPlayerListener: Player.EventListener = object : Player.EventListener {
         var prevWindowIndex: Int? = null
+
+        override fun onEvents(player: Player, events: Player.Events) {
+            super.onEvents(player, events)
+        }
+
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             when (playbackState) {
                 Player.STATE_BUFFERING,
