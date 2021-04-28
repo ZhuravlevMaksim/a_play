@@ -10,11 +10,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Binder
-import android.os.Bundle
 import android.os.IBinder
-import android.os.ResultReceiver
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.google.android.exoplayer2.*
@@ -22,9 +20,8 @@ import com.google.android.exoplayer2.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIS
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector.ALL_PLAYBACK_ACTIONS
-import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.muzic.aplay.db.AudioRepository
 import org.koin.android.ext.android.inject
@@ -113,43 +110,11 @@ class PlayerService : Service() {
 
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setEnabledPlaybackActions(ALL_PLAYBACK_ACTIONS)
-        // todo: why?
-        mediaSessionConnector.setQueueNavigator(object : MediaSessionConnector.QueueNavigator {
-            override fun onCommand(
-                player: Player,
-                controlDispatcher: ControlDispatcher,
-                command: String,
-                extras: Bundle?,
-                cb: ResultReceiver?
-            ): Boolean {
-                return false;
-            }
-
-            override fun getSupportedQueueNavigatorActions(player: Player): Long {
-                return PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-            }
-
-            override fun onTimelineChanged(player: Player) {
-
-            }
-
-            override fun onCurrentWindowIndexChanged(player: Player) {
-            }
-
-            override fun getActiveQueueItemId(player: Player?): Long {
-                return player?.currentWindowIndex?.toLong() ?: 0
-            }
-
-            override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
-               player.previous()
-            }
-
-            override fun onSkipToQueueItem(player: Player, controlDispatcher: ControlDispatcher, id: Long) {
-
-            }
-
-            override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {
-               player.next()
+        mediaSessionConnector.setQueueNavigator(object : TimelineQueueNavigator(mediaSession) {
+            override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
+                return MediaDescriptionCompat.Builder()
+                    .setTitle(player.getMediaItemAt(windowIndex).mediaMetadata.title)
+                    .build()
             }
         })
         mediaSessionConnector.setPlayer(exoPlayer)
@@ -159,7 +124,6 @@ class PlayerService : Service() {
         audioRepository.currentPathAudios.value?.let { list ->
             exoPlayer.setMediaItems(list.map { MediaItem.fromUri(it.uri) }.toMutableList())
         }
-
         val position = intent!!.getIntExtra("position", 0)
         exoPlayer.seekTo(position, 0)
         exoPlayer.prepare()
@@ -210,8 +174,5 @@ class PlayerService : Service() {
             }
         }
 
-        override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
-            super.onTracksChanged(trackGroups, trackSelections)
-        }
     }
 }
