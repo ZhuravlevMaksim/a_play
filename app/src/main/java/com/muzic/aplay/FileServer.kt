@@ -15,7 +15,7 @@ import java.io.File
 import java.util.*
 
 
-class PlayFileServer {
+class FileServer {
 
     private val port = 1224
     private val host = "localhost"

@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.support.v4.media.session.MediaControllerCompat
 import android.view.Gravity
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.LayoutMode
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit
 class PlayerDetailsUi(private val audioRepository: AudioRepository) {
 
     private var mediaController: MediaControllerCompat? = null
+    private val executor by lazy { Executors.newSingleThreadScheduledExecutor() }
 
     fun show(fragment: Fragment?) {
         fragment?.let {
@@ -43,11 +45,9 @@ class PlayerDetailsUi(private val audioRepository: AudioRepository) {
                     val scheduleAtFixedRate = executor.scheduleAtFixedRate({
                         val duration = mediaController?.metadata?.getLong("android.media.metadata.DURATION")
                         val position = mediaController?.playbackState?.position ?: 0
-
                         if (playerControls.seekBar.max == 0) {
                             playerControls.seekBar.max = duration?.toInt() ?: 0
                         }
-
                         duration?.let {
                             playerControls.seekBar.progress = position.toInt()
                         }
@@ -86,6 +86,11 @@ class PlayerDetailsUi(private val audioRepository: AudioRepository) {
                             }
                             show()
                         }
+                    }
+
+                    playerControls.sleepTime.setOnClickListener {
+                        Toast.makeText(context, "set sleep in 10 minutes", Toast.LENGTH_SHORT).show()
+                        executor.schedule({ mediaController?.transportControls?.pause() }, 10, TimeUnit.MINUTES)
                     }
                 }
         }
