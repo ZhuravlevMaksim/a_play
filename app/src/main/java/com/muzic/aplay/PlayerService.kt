@@ -2,7 +2,7 @@ package com.muzic.aplay
 
 import android.app.Notification
 import android.app.NotificationChannel
-import android.app.NotificationManager.IMPORTANCE_DEFAULT
+import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
@@ -52,7 +52,7 @@ class PlayerService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        val nc = NotificationChannel(NOTIFICATION_DEFAULT_CHANNEL_ID, "a play channel", IMPORTANCE_DEFAULT)
+        val nc = NotificationChannel(NOTIFICATION_DEFAULT_CHANNEL_ID, "a play channel", IMPORTANCE_LOW)
         val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
         nm.createNotificationChannel(nc)
 
