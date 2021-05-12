@@ -48,8 +48,12 @@ class PlayTileService : TileService() {
                 Tile.STATE_INACTIVE -> Tile.STATE_ACTIVE
                 else -> Tile.STATE_INACTIVE
             }
+            if (state == Tile.STATE_ACTIVE) {
+                val info = FileServer(applicationContext).startFtp()
+                println(info)
+            }
             updateTile()
         }
-
     }
+
 }

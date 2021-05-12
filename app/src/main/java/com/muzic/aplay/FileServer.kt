@@ -1,5 +1,9 @@
 package com.muzic.aplay
 
+import android.content.Context
+import android.content.Context.WIFI_SERVICE
+import android.net.wifi.WifiManager
+import android.text.format.Formatter
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.SimpleWebServer
 import org.apache.ftpserver.ConnectionConfigFactory
@@ -15,13 +19,16 @@ import java.io.File
 import java.util.*
 
 
-class FileServer {
+class FileServer(val context: Context) {
 
     private val port = 1224
-    private val host = "localhost"
+    private val host by lazy {
+        val wm = context.getSystemService(WIFI_SERVICE) as WifiManager
+        Formatter.formatIpAddress(wm.connectionInfo.ipAddress)
+    }
     private val path = File(".")
 
-    private var ftpServer: FtpServer?  = null
+    private var ftpServer: FtpServer? = null
     private var httpServer: NanoHTTPD? = null
 
     fun startHttp(): ServerInfo {
@@ -37,7 +44,7 @@ class FileServer {
 
         val serverFactory = FtpServerFactory()
         serverFactory.addListener("default", factory.createListener())
-        
+
         val connectionConfigFactory = ConnectionConfigFactory()
         connectionConfigFactory.isAnonymousLoginEnabled = true
         connectionConfigFactory.maxLoginFailures = 5
@@ -60,7 +67,7 @@ class FileServer {
         ftpServer = serverFactory.createServer()
         ftpServer?.start()
 
-        return ServerInfo("ftp://localhost:$port/", user.name, user.password)
+        return ServerInfo("ftp://$host:$port/", user.name, user.password)
     }
 
     data class ServerInfo(
