@@ -8,6 +8,8 @@ import android.util.Log
 
 class PlayTileService : TileService() {
 
+    private var fileServer: FileServer? = null
+
     override fun onDestroy() {
         Log.i("tile-service", "onDestroy")
         super.onDestroy()
@@ -49,8 +51,11 @@ class PlayTileService : TileService() {
                 else -> Tile.STATE_INACTIVE
             }
             if (state == Tile.STATE_ACTIVE) {
-                val info = FileServer(applicationContext).startFtp()
+                fileServer = FileServer(applicationContext)
+                val info = fileServer?.startServer()
                 println(info)
+            }else{
+                fileServer?.stop()
             }
             updateTile()
         }

@@ -4,76 +4,45 @@ import android.content.Context
 import android.content.Context.WIFI_SERVICE
 import android.net.wifi.WifiManager
 import android.text.format.Formatter
+import fi.iki.elonen.NanoFileUpload
 import fi.iki.elonen.NanoHTTPD
-import fi.iki.elonen.SimpleWebServer
-import org.apache.ftpserver.ConnectionConfigFactory
-import org.apache.ftpserver.FtpServer
-import org.apache.ftpserver.FtpServerFactory
-import org.apache.ftpserver.ftplet.Authority
-import org.apache.ftpserver.listener.ListenerFactory
-import org.apache.ftpserver.usermanager.impl.BaseUser
-import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission
-import org.apache.ftpserver.usermanager.impl.TransferRatePermission
-import org.apache.ftpserver.usermanager.impl.WritePermission
-import java.io.File
-import java.util.*
+import org.apache.commons.fileupload.FileItem
+import org.apache.commons.fileupload.disk.DiskFileItemFactory
 
 
-class FileServer(val context: Context) {
+class FileServer(val context: Context) : NanoHTTPD(12284) {
 
-    private val port = 1224
     private val host by lazy {
         val wm = context.getSystemService(WIFI_SERVICE) as WifiManager
         Formatter.formatIpAddress(wm.connectionInfo.ipAddress)
     }
-    private val path = File(".")
 
-    private var ftpServer: FtpServer? = null
-    private var httpServer: NanoHTTPD? = null
-
-    fun startHttp(): ServerInfo {
-        httpServer = SimpleWebServer(host, port, path, true)
-        httpServer?.start()
-        return ServerInfo("http://$host:$port/")
+    fun startServer(): String {
+        this.start(SOCKET_READ_TIMEOUT, false)
+        return "http://$host:${this.listeningPort}/"
     }
 
-    fun startFtp(): ServerInfo {
+    override fun serve(session: IHTTPSession?): Response {
 
-        val factory = ListenerFactory()
-        factory.port = port
-
-        val serverFactory = FtpServerFactory()
-        serverFactory.addListener("default", factory.createListener())
-
-        val connectionConfigFactory = ConnectionConfigFactory()
-        connectionConfigFactory.isAnonymousLoginEnabled = true
-        connectionConfigFactory.maxLoginFailures = 5
-        connectionConfigFactory.loginFailureDelay = 2000
-        serverFactory.connectionConfig = connectionConfigFactory.createConnectionConfig()
-
-        val user = BaseUser()
-        user.name = "a play"
-        user.password = null
-        user.homeDirectory = File(".").path
-
-        val list: MutableList<Authority> = ArrayList()
-        list.add(WritePermission())
-        list.add(TransferRatePermission(0, 0))
-        list.add(ConcurrentLoginPermission(10, 10))
-        user.authorities = list
-
-        serverFactory.userManager.save(user)
-
-        ftpServer = serverFactory.createServer()
-        ftpServer?.start()
-
-        return ServerInfo("ftp://$host:$port/", user.name, user.password)
+        return try {
+            val files: List<FileItem> = NanoFileUpload(DiskFileItemFactory()).parseRequest(session)
+            var uploadedCount = 0
+            for (file in files) {
+                try {
+                    val fileName: String = file.name
+                    val fileContent = file.string
+//                    Files.write(Paths.get(fileName), fileContent)
+                    println(fileName)
+                    println(fileContent)
+                    uploadedCount++
+                } catch (exception: Exception) {
+                    // handle
+                }
+            }
+            newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Uploaded files " + uploadedCount + " out of " + files.size)
+        } catch (e: java.lang.Exception) {
+            return newFixedLengthResponse(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "Error when uploading")
+        }
     }
-
-    data class ServerInfo(
-        val path: String,
-        val user: String? = null,
-        val password: String? = null
-    )
 
 }
