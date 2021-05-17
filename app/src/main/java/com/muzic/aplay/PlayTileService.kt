@@ -11,6 +11,7 @@ class PlayTileService : TileService() {
     override fun onDestroy() {
         fileServer?.stop()
         fileServer = null
+        setTileInactive()
     }
 
     override fun onStartListening() {
@@ -19,6 +20,7 @@ class PlayTileService : TileService() {
 
     override fun onStopListening() {
         fileServer?.stop()
+        setTileInactive()
     }
 
     override fun onClick() {
@@ -36,6 +38,13 @@ class PlayTileService : TileService() {
             } else {
                 fileServer?.stop()
             }
+            updateTile()
+        }
+    }
+
+    private fun setTileInactive() {
+        with(qsTile) {
+            this.state = Tile.STATE_INACTIVE
             updateTile()
         }
     }

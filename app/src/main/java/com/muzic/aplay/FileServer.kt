@@ -36,10 +36,7 @@ class FileServer(val context: Context) : NanoHTTPD(12284) {
             for (file in files) {
                 try {
                     val fileName: String = file.name
-                    val fileContent = file.string
-
-                    println(fileName)
-                    println(fileContent)
+                    val fileContent = file.get()
 
                     val details = ContentValues().apply {
                         put(MediaStore.Downloads.DISPLAY_NAME, fileName)
@@ -51,7 +48,7 @@ class FileServer(val context: Context) : NanoHTTPD(12284) {
 
                     contentUri?.let {
                         context.contentResolver.openFileDescriptor(it, "w").use { descriptor ->
-                            ParcelFileDescriptor.AutoCloseOutputStream(descriptor).write(fileContent.toByteArray())
+                            ParcelFileDescriptor.AutoCloseOutputStream(descriptor).write(fileContent)
                         }
                         details.clear()
                         details.put(MediaStore.Downloads.IS_PENDING, 0)
