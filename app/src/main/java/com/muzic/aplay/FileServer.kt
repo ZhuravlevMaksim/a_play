@@ -1,8 +1,11 @@
 package com.muzic.aplay
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Context.WIFI_SERVICE
 import android.net.wifi.WifiManager
+import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
 import android.text.format.Formatter
 import fi.iki.elonen.NanoFileUpload
 import fi.iki.elonen.NanoHTTPD
@@ -23,17 +26,38 @@ class FileServer(val context: Context) : NanoHTTPD(12284) {
     }
 
     override fun serve(session: IHTTPSession?): Response {
-
         return try {
             val files: List<FileItem> = NanoFileUpload(DiskFileItemFactory()).parseRequest(session)
             var uploadedCount = 0
+
+            val downloads = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            val path = session?.headers?.get("path") ?: ""
+
             for (file in files) {
                 try {
                     val fileName: String = file.name
                     val fileContent = file.string
-//                    Files.write(Paths.get(fileName), fileContent)
+
                     println(fileName)
                     println(fileContent)
+
+                    val details = ContentValues().apply {
+                        put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                        put(MediaStore.DownloadColumns.RELATIVE_PATH, "Download/${path}")
+                        put(MediaStore.Downloads.IS_PENDING, 1)
+                    }
+
+                    val contentUri = context.contentResolver.insert(downloads, details)
+
+                    contentUri?.let {
+                        context.contentResolver.openFileDescriptor(it, "w").use { descriptor ->
+                            ParcelFileDescriptor.AutoCloseOutputStream(descriptor).write(fileContent.toByteArray())
+                        }
+                        details.clear()
+                        details.put(MediaStore.Downloads.IS_PENDING, 0)
+                        context.contentResolver.update(it, details, null, null)
+                    }
+
                     uploadedCount++
                 } catch (exception: Exception) {
                     // handle

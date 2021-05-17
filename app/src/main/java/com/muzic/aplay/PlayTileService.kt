@@ -1,49 +1,27 @@
 package com.muzic.aplay
 
-import android.content.Intent
-import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.util.Log
 
+//todo: add foreground
 class PlayTileService : TileService() {
 
     private var fileServer: FileServer? = null
 
     override fun onDestroy() {
-        Log.i("tile-service", "onDestroy")
-        super.onDestroy()
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        Log.i("tile-service", "onBind")
-        return super.onBind(intent)
-    }
-
-    override fun onTileAdded() {
-        Log.i("tile-service", "onTileAdded")
-        super.onTileAdded()
-    }
-
-    override fun onTileRemoved() {
-        Log.i("tile-service", "onTileRemoved")
-        super.onTileRemoved()
+        fileServer?.stop()
+        fileServer = null
     }
 
     override fun onStartListening() {
-        Log.i("tile-service", "onStartListening")
-        super.onStartListening()
+        fileServer = fileServer ?: FileServer(applicationContext)
     }
 
     override fun onStopListening() {
-        Log.i("tile-service", "onStopListening")
-        super.onStopListening()
+        fileServer?.stop()
     }
 
     override fun onClick() {
-        Log.i("tile-service", "onClick")
-        super.onClick()
-
         with(qsTile) {
             state = when (state) {
                 Tile.STATE_ACTIVE -> Tile.STATE_INACTIVE
@@ -51,14 +29,14 @@ class PlayTileService : TileService() {
                 else -> Tile.STATE_INACTIVE
             }
             if (state == Tile.STATE_ACTIVE) {
-                fileServer = FileServer(applicationContext)
-                val info = fileServer?.startServer()
-                println(info)
-            }else{
+                fileServer = fileServer ?: FileServer(applicationContext)
+                if (fileServer?.isAlive == false) {
+                    println(fileServer?.startServer())
+                }
+            } else {
                 fileServer?.stop()
             }
             updateTile()
         }
     }
-
 }
