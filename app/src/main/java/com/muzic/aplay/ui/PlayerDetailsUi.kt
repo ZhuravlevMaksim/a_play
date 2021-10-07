@@ -93,11 +93,11 @@ class PlayerDetailsUi(private val audioRepository: AudioRepository) {
                         }
                     }
                     playerControls.sleepTime.setOnClickListener {
-                        Toast.makeText(context, "set sleep in 10 minutes", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "set sleep in 30 minutes", Toast.LENGTH_SHORT).show()
                         if (sleepTask == null || sleepTask?.isCancelled != false || sleepTask?.isDone != false) {
                             sleepTask = executor.schedule({
                                 mediaController?.transportControls?.pause()
-                            }, 10, TimeUnit.MINUTES)
+                            }, 30, TimeUnit.MINUTES)
                         }
                     }
                     playerControls.skipPrev.setOnClickListener {
